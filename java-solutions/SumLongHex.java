@@ -1,6 +1,6 @@
-public class Sum{
+public class SumLongHex {
     public static void main(String[] args) {
-        int answer = 0;
+        long answer = 0;
 
         for (String arg : args) {
             int leftNumberBorder = -1;
@@ -19,12 +19,12 @@ public class Sum{
         System.out.println(answer);
     }
 
-    private static int tryParseSubstring(String string, int l, int r){
+    private static long tryParseSubstring(String string, int l, int r){
         if(l >= 0){
             try{
-                return Integer.parseInt(string.substring(l, r));
+                return Long.parseLong(string.substring(l, r));
             } catch (NumberFormatException e){
-                System.err.println(e.getMessage());
+                return Long.parseUnsignedLong(string.substring(l + 2, r), 16);
             }
         }
         return 0;
