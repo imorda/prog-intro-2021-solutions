@@ -25,13 +25,16 @@ public class WsppSecondG {
                             continue;
                         }
 
-                        if (!data.containsKey(key)) {
+                        var element = data.get(key);
+
+                        if (element == null) {
                             data.put(key, new WordData());
+                            element = data.get(key);
                         }
 
-                        data.get(key).occurenceCount++;
+                        element.occurenceCount++;
                         if (parityInLine.contains(key)) {
-                            data.get(key).occurenceList.add(currentWordPosition);
+                            element.occurenceList.add(currentWordPosition);
                             parityInLine.remove(key);
                         } else {
                             parityInLine.add(key);
