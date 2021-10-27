@@ -8,3 +8,5 @@ _*
 *.class
 
 *.iml
+
+out/
