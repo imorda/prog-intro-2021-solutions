@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class MarkupClass extends MarkupSerializableSequence {
+    // :NOTE: Память
     private final String mdHighlighterOpen;
     private final String mdHighlighterClose;
     private final String bbHighlighterOpen;

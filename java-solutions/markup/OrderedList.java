@@ -8,4 +8,9 @@ public class OrderedList extends List {
     public OrderedList(MarkupSerializable contentData) throws NullPointerException {
         this(java.util.List.of(contentData));
     }
+
+    public static void main(String[] args) {
+        // :NOTE: Не должно компилироваться
+        new OrderedList(java.util.List.of(new Text("hello")));
+    }
 }

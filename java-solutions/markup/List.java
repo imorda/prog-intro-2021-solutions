@@ -1,5 +1,6 @@
 package markup;
 
+// :NOTE: Переименовалть
 public class List extends MarkupClass {
     public List(java.util.List<MarkupSerializable> contentData, final String bbTagMod) throws NullPointerException {
         super(contentData, "", "", "[list" + bbTagMod + "]", "[/list]");
