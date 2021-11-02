@@ -2,14 +2,15 @@ package markup;
 
 import java.util.List;
 
-public class Emphasis extends MarkupClass {
-    private final static String HIGHLIGHT_SYMBOL = "*";
+public class Emphasis extends MarkupSymmetricClass {
+    private final static String MD_HIGHLIGHT_SYMBOL = "*";
+    private final static String BB_HIGHLIGHT_SYMBOL = "i";
 
-    public Emphasis(List<MarkdownSerializable> contentData) {
-        super(contentData, HIGHLIGHT_SYMBOL);
+    public Emphasis(List<MarkupSerializable> contentData) {
+        super(contentData, MD_HIGHLIGHT_SYMBOL, BB_HIGHLIGHT_SYMBOL);
     }
 
-    public Emphasis(MarkdownSerializable contentData) {
-        super(contentData, HIGHLIGHT_SYMBOL);
+    public Emphasis(MarkupSerializable contentData) {
+        super(contentData, MD_HIGHLIGHT_SYMBOL, BB_HIGHLIGHT_SYMBOL);
     }
 }

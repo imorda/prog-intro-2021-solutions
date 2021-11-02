@@ -2,14 +2,15 @@ package markup;
 
 import java.util.List;
 
-public class Strikeout extends MarkupClass {
-    private final static String HIGHLIGHT_SYMBOL = "~";
+public class Strikeout extends MarkupSymmetricClass {
+    private final static String MD_HIGHLIGHT_SYMBOL = "~";
+    private final static String BB_HIGHLIGHT_SYMBOL = "s";
 
-    public Strikeout(List<MarkdownSerializable> contentData) {
-        super(contentData, HIGHLIGHT_SYMBOL);
+    public Strikeout(List<MarkupSerializable> contentData) {
+        super(contentData, MD_HIGHLIGHT_SYMBOL, BB_HIGHLIGHT_SYMBOL);
     }
 
-    public Strikeout(MarkdownSerializable contentData) {
-        super(contentData, HIGHLIGHT_SYMBOL);
+    public Strikeout(MarkupSerializable contentData) {
+        super(contentData, MD_HIGHLIGHT_SYMBOL, BB_HIGHLIGHT_SYMBOL);
     }
 }
