@@ -3,12 +3,14 @@ package markup;
 import java.util.List;
 
 public class ListItem extends AbstractMarkupTaggedGroup implements MarkupSerializable {
+    private static final Tag TAG = new Tag("", "[*]", "");
+
     public ListItem(List<MarkupStructure> content) {
-        super(content, Tags.LIST_ITEM);
+        super(content, TAG);
     }
 
     public ListItem(MarkupStructure content) {
-        super(content, Tags.LIST_ITEM);
+        super(content, TAG);
     }
 
     @Override

@@ -3,11 +3,11 @@ package markup;
 import java.util.List;
 
 public class Strikeout extends AbstractMarkupElement {
-    public Strikeout(MarkupCombinable content) {
-        super(content, Tags.STRIKEOUT);
-    }
-
+    private static final Tag TAG = new Tag("~", "s");
     public Strikeout(List<MarkupCombinable> content) {
-        super(content, Tags.STRIKEOUT);
+        super(content, TAG);
+    }
+    public Strikeout(MarkupCombinable content) {
+        super(content, TAG);
     }
 }

@@ -3,11 +3,11 @@ package markup;
 import java.util.List;
 
 public abstract class AbstractMarkupList extends AbstractMarkupTaggedGroup implements MarkupStructure {
-    public AbstractMarkupList(List<ListItem> content, Tags tag) {
+    public AbstractMarkupList(List<ListItem> content, Tag tag) {
         super(content, tag);
     }
 
-    public AbstractMarkupList(ListItem content, Tags tag) {
+    public AbstractMarkupList(ListItem content, Tag tag) {
         super(content, tag);
     }
 

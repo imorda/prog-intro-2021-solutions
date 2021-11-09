@@ -3,11 +3,11 @@ package markup;
 import java.util.List;
 
 public class Emphasis extends AbstractMarkupElement {
-    public Emphasis(MarkupCombinable content) {
-        super(content, Tags.EMPHASIS);
-    }
-
+    private static final Tag TAG = new Tag("*", "i");
     public Emphasis(List<MarkupCombinable> content) {
-        super(content, Tags.EMPHASIS);
+        super(content, TAG);
+    }
+    public Emphasis(MarkupCombinable content) {
+        super(content, TAG);
     }
 }
