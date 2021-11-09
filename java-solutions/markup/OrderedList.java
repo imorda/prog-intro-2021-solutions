@@ -7,7 +7,7 @@ public class OrderedList extends AbstractMarkupList {
         super(content, Tags.ORDERED_LIST);
     }
 
-    public OrderedList(ListItem content) {
-        super(content, Tags.ORDERED_LIST);
+    public OrderedList(final ListItem... content) {
+        super(List.of(content), Tags.ORDERED_LIST);
     }
 }

@@ -3,16 +3,16 @@ package markup;
 import java.util.List;
 
 public abstract class AbstractMarkupList extends AbstractMarkupTaggedGroup implements MarkupStructure {
-    public AbstractMarkupList(List<ListItem> content, Tags tag) {
+    public AbstractMarkupList(final List<ListItem> content, final Tags tag) {
         super(content, tag);
     }
 
-    public AbstractMarkupList(ListItem content, Tags tag) {
+    public AbstractMarkupList(final ListItem content, final Tags tag) {
         super(content, tag);
     }
 
     @Override
-    public void toMarkdown(StringBuilder sb) {
+    public void toMarkdown(final StringBuilder sb) {
         throw new UnsupportedOperationException("Markdown is unsupported for Lists");
     }
 }
