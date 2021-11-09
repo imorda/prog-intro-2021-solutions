@@ -2,7 +2,7 @@ package markup;
 
 import java.util.List;
 
-public class Strong extends MarkupElement {
+public class Strong extends AbstractMarkupElement {
     public Strong(MarkupCombinable content) {
         super(content, Tags.STRONG);
     }

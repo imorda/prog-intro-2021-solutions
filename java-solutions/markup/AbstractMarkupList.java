@@ -2,12 +2,12 @@ package markup;
 
 import java.util.List;
 
-public class MarkupList extends MarkupTaggedGroup implements MarkupStructure {
-    public MarkupList(List<ListItem> content, Tags tag) {
+public abstract class AbstractMarkupList extends AbstractMarkupTaggedGroup implements MarkupStructure {
+    public AbstractMarkupList(List<ListItem> content, Tags tag) {
         super(content, tag);
     }
 
-    public MarkupList(ListItem content, Tags tag) {
+    public AbstractMarkupList(ListItem content, Tags tag) {
         super(content, tag);
     }
 

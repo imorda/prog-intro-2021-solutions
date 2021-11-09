@@ -2,7 +2,7 @@ package markup;
 
 import java.util.List;
 
-public class ListItem extends MarkupTaggedGroup implements MarkupSerializable {
+public class ListItem extends AbstractMarkupTaggedGroup implements MarkupSerializable {
     public ListItem(List<MarkupStructure> content) {
         super(content, Tags.LIST_ITEM);
     }

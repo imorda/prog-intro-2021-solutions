@@ -3,15 +3,15 @@ package markup;
 import java.util.List;
 import java.util.Objects;
 
-public class MarkupTaggedGroup extends AbstractMarkupGroup {
+public abstract class AbstractMarkupTaggedGroup extends AbstractMarkupGroup {
     protected final Tags tag;
 
-    public MarkupTaggedGroup(List<? extends MarkupSerializable> content, Tags tag) {
+    public AbstractMarkupTaggedGroup(List<? extends MarkupSerializable> content, Tags tag) {
         super(content);
         this.tag = Objects.requireNonNull(tag);
     }
 
-    public MarkupTaggedGroup(MarkupSerializable content, Tags tag) {
+    public AbstractMarkupTaggedGroup(MarkupSerializable content, Tags tag) {
         super(content);
         this.tag = Objects.requireNonNull(tag);
     }
