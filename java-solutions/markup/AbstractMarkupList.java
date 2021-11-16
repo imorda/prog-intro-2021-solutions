@@ -15,4 +15,9 @@ public abstract class AbstractMarkupList extends AbstractMarkupTaggedGroup imple
     public void toMarkdown(StringBuilder sb) {
         throw new UnsupportedOperationException("Markdown is unsupported for Lists");
     }
+
+    @Override
+    public void toHtml(StringBuilder sb) {
+        throw new UnsupportedOperationException("HTML is unsupported for Lists");
+    }
 }

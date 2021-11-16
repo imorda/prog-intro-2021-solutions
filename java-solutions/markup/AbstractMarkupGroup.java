@@ -18,6 +18,8 @@ public abstract class AbstractMarkupGroup implements MarkupSerializable {
 
     protected abstract void generateBBTagImpl(StringBuilder sb, boolean closing);
 
+    protected abstract void generateHTMLTagImpl(StringBuilder sb, boolean closing);
+
     @Override
     public void toMarkdown(StringBuilder sb) {
         generateMDTagImpl(sb, false);
@@ -34,5 +36,14 @@ public abstract class AbstractMarkupGroup implements MarkupSerializable {
             i.toBBCode(sb);
         }
         generateBBTagImpl(sb, true);
+    }
+
+    @Override
+    public void toHtml(StringBuilder sb) {
+        generateHTMLTagImpl(sb, false);
+        for (MarkupSerializable i : content) {
+            i.toHtml(sb);
+        }
+        generateHTMLTagImpl(sb, true);
     }
 }

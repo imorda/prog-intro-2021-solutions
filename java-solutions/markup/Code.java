@@ -4,19 +4,19 @@ import md2html.MarkupCombinableParser;
 
 import java.util.List;
 
-public class Strikeout extends AbstractMarkupTaggedGroup implements MarkupCombinable {
-    private static final Tag TAG = new Tag("~", "--", "[s]", "[/s]", "<s>", "</s>");
+public class Code extends AbstractMarkupTaggedGroup implements MarkupCombinable {
+    private static final Tag TAG = new Tag("`", "s", "code");
 
-    public Strikeout(List<MarkupCombinable> content) {
+    public Code(List<MarkupCombinable> content) {
         super(content, TAG);
     }
 
-    public Strikeout(MarkupCombinable content) {
+    public Code(MarkupCombinable content) {
         super(content, TAG);
     }
 
 
-    public static Strikeout parseMD(String data, MutableRange range) {
+    public static Code parseMD(String data, MutableRange range) {
         MutableRange newRange = tryParseByTag(data, range, TAG.getMd(), TAG.getMd());
         if (newRange == null) {
             newRange = tryParseByTag(data, range, TAG.getMdAlt(), TAG.getMdAlt());
@@ -24,7 +24,7 @@ public class Strikeout extends AbstractMarkupTaggedGroup implements MarkupCombin
         if (newRange == null) {
             return null;
         }
-        return new Strikeout(MarkupCombinableParser.getInstance().parseMD(data, newRange));
+        return new Code(MarkupCombinableParser.getInstance().parseMD(data, newRange));
     }
 
     public static boolean isValidLeftBorder(String data, int pos) {
