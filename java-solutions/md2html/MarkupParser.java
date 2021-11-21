@@ -15,11 +15,11 @@ public class MarkupParser {
 
         List<MarkupStructure> result = new ArrayList<>();
 
-        while (pos.val < data.length()) {
+        while (pos.get() < data.length()) {
             MarkupStructure struct = MarkupStructureParser.parseMD(data, pos);
 
             if (struct == null) {
-                pos.val++;
+                pos.set(pos.get() + 1);
             } else {
                 result.add(struct);
             }

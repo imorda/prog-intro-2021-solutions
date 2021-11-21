@@ -14,7 +14,7 @@ public class MarkupCombinableParser {
     }
 
     public static MarkupCombinable parseMD(String data, MutableInt range) {
-        if (range.val >= data.length()) {
+        if (range.get() >= data.length()) {
             return null;
         }
 
@@ -24,7 +24,7 @@ public class MarkupCombinableParser {
             String detectedTag = detectLeftBorder(data, range, i.mdTag());
             try {
                 if (detectedTag != null) {
-                    range.val += detectedTag.length();
+                    range.set(range.get() + detectedTag.length());
 
                     if (i.type() == Unformatted.class) {
                         Unformatted parsed = parseUnformatted(data, range, detectedTag);
@@ -35,10 +35,10 @@ public class MarkupCombinableParser {
                         return parsed;
                     }
 
-                    while (range.val < data.length() && !validateRightBorder(data, range, detectedTag)) {
+                    while (range.get() < data.length() && !validateRightBorder(data, range, detectedTag)) {
                         result.add(parseMD(data, range));
                     }
-                    range.val += detectedTag.length();
+                    range.set(range.get() + detectedTag.length());
                     return i.type().getDeclaredConstructor(List.class).newInstance(result);
                 }
             } catch (NoSuchMethodException e) {
@@ -53,14 +53,14 @@ public class MarkupCombinableParser {
         StringBuilder textBuilder = new StringBuilder();
 
         do {
-            if (data.charAt(range.val) != '\\') {
-                textBuilder.append(data.charAt(range.val));
+            if (data.charAt(range.get()) != '\\') {
+                textBuilder.append(data.charAt(range.get()));
             }
-            range.val++;
-        } while (range.val < data.length() && !isTagSymbol(data, range) &&
-                !(data.startsWith("\r\n\r\n", range.val) || data.startsWith("\n\n", range.val)));
+            range.set(range.get() + 1);
+        } while (range.get() < data.length() && !isTagSymbol(data, range) &&
+                !(data.startsWith("\r\n\r\n", range.get()) || data.startsWith("\n\n", range.get())));
 
-        if (range.val >= data.length()) {
+        if (range.get() >= data.length()) {
             while (textBuilder.length() > 0 &&
                     "\r\n".contains(textBuilder.subSequence(textBuilder.length() - 1, textBuilder.length()))) {
                 textBuilder.deleteCharAt(textBuilder.length() - 1);
@@ -72,8 +72,8 @@ public class MarkupCombinableParser {
     private static boolean isTagSymbol(String data, MutableInt pos) {
         for (ParseableTypes i : ParseableTypes.taggedCombinableTypes) {
             for (String j : i.mdTag()) {
-                if (pos.val < data.length() && data.startsWith(j, pos.val) &&
-                        !(pos.val > 0 && data.charAt(pos.val - 1) == '\\')) {
+                if (pos.get() < data.length() && data.startsWith(j, pos.get()) &&
+                        !(pos.get() > 0 && data.charAt(pos.get() - 1) == '\\')) {
                     return true;
                 }
             }
@@ -83,10 +83,10 @@ public class MarkupCombinableParser {
 
     private static String detectLeftBorder(String data, MutableInt pos, String... tag) {
         for (String i : tag) {
-            if (pos.val < data.length() && data.startsWith(i, pos.val) &&
-                    !(pos.val + i.length() < data.length() &&
-                            ("\n\r ").contains(Character.toString(data.charAt(pos.val + i.length())))) &&
-                    !(pos.val > 0 && data.charAt(pos.val - 1) == '\\')) {
+            if (pos.get() < data.length() && data.startsWith(i, pos.get()) &&
+                    !(pos.get() + i.length() < data.length() &&
+                            ("\n\r ").contains(Character.toString(data.charAt(pos.get() + i.length())))) &&
+                    !(pos.get() > 0 && data.charAt(pos.get() - 1) == '\\')) {
                 return i;
             }
         }
@@ -95,13 +95,13 @@ public class MarkupCombinableParser {
 
     private static boolean validateRightBorder(String data, MutableInt pos, String... tag) {
         for (String i : tag) {
-            if (pos.val > 0 && pos.val < data.length() && data.startsWith(i, pos.val) &&
-                    !("\n\r ").contains(Character.toString(data.charAt(pos.val - 1))) &&
-                    data.charAt(pos.val - 1) != '\\') {
+            if (pos.get() > 0 && pos.get() < data.length() && data.startsWith(i, pos.get()) &&
+                    !("\n\r ").contains(Character.toString(data.charAt(pos.get() - 1))) &&
+                    data.charAt(pos.get() - 1) != '\\') {
 
                 for (ParseableTypes j : ParseableTypes.taggedCombinableTypes) {
                     for (String k : j.mdTag()) {
-                        if (k.length() > i.length() && data.startsWith(k, pos.val)) {
+                        if (k.length() > i.length() && data.startsWith(k, pos.get())) {
                             return false;
                         }
                     }
@@ -115,15 +115,15 @@ public class MarkupCombinableParser {
     private static Unformatted parseUnformatted(String data, MutableInt pos, String tag) {
         MutableInt startPos = pos.copy();
         StringBuilder result = new StringBuilder();
-        while (pos.val < data.length()) {
-            if (data.startsWith(tag, pos.val)) {
-                pos.val += tag.length();
+        while (pos.get() < data.length()) {
+            if (data.startsWith(tag, pos.get())) {
+                pos.set(pos.get() + tag.length());
                 return new Unformatted(List.of(new Text(result.toString())));
             }
-            result.append(data.charAt(pos.val));
-            pos.val++;
+            result.append(data.charAt(pos.get()));
+            pos.set(pos.get() + 1);
         }
-        pos.val = startPos.val;
+        pos.set(startPos.get());
         return null;
     }
 }

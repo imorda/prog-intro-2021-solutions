@@ -13,7 +13,7 @@ public class MarkupStructureParser {
     }
 
     public static MarkupStructure parseMD(String data, MutableInt range) {
-        if (range.val >= data.length()) {
+        if (range.get() >= data.length()) {
             return null;
         }
 
@@ -21,8 +21,8 @@ public class MarkupStructureParser {
 
         int headlineLevel = validateHeadlineBorder(data, range);
         if (headlineLevel > 0 || validateParagraph(data, range)) {
-            while (range.val < data.length() && !data.startsWith("\n\n", range.val) &&
-                    !data.startsWith("\r\n\r\n", range.val)) {
+            while (range.get() < data.length() && !data.startsWith("\n\n", range.get()) &&
+                    !data.startsWith("\r\n\r\n", range.get())) {
                 var parsed = MarkupCombinableParser.parseMD(data, range);
                 if (parsed == null) {
                     throw new AssertionError();
@@ -40,7 +40,7 @@ public class MarkupStructureParser {
     }
 
     private static int validateHeadlineBorder(String data, MutableInt range) {
-        int pos = range.val;
+        int pos = range.get();
         if (pos < data.length() && !(pos > 0 && data.charAt(pos - 1) == '\\')) {
             int level = 0;
             while (pos < data.length() && data.charAt(pos) == '#') {
@@ -48,7 +48,7 @@ public class MarkupStructureParser {
                 pos++;
             }
             if (level > 0 && pos < data.length() && data.charAt(pos) == ' ') {
-                range.val = pos + 1;
+                range.set(pos + 1);
                 return level;
             }
         }
@@ -56,6 +56,6 @@ public class MarkupStructureParser {
     }
 
     private static boolean validateParagraph(String data, MutableInt range) {
-        return range.val < data.length() && data.charAt(range.val) != '\n' && data.charAt(range.val) != '\r';
+        return range.get() < data.length() && data.charAt(range.get()) != '\n' && data.charAt(range.get()) != '\r';
     }
 }
