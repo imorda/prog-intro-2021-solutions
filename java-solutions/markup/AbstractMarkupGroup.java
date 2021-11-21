@@ -14,36 +14,24 @@ public abstract class AbstractMarkupGroup implements MarkupSerializable {
         this(List.of(Objects.requireNonNull(content)));
     }
 
-    protected abstract void generateMDTagImpl(StringBuilder sb, boolean closing);
-
-    protected abstract void generateBBTagImpl(StringBuilder sb, boolean closing);
-
-    protected abstract void generateHTMLTagImpl(StringBuilder sb, boolean closing);
-
     @Override
     public void toMarkdown(StringBuilder sb) {
-        generateMDTagImpl(sb, false);
         for (MarkupSerializable i : content) {
             i.toMarkdown(sb);
         }
-        generateMDTagImpl(sb, true);
     }
 
     @Override
     public void toBBCode(StringBuilder sb) {
-        generateBBTagImpl(sb, false);
         for (MarkupSerializable i : content) {
             i.toBBCode(sb);
         }
-        generateBBTagImpl(sb, true);
     }
 
     @Override
     public void toHtml(StringBuilder sb) {
-        generateHTMLTagImpl(sb, false);
         for (MarkupSerializable i : content) {
             i.toHtml(sb);
         }
-        generateHTMLTagImpl(sb, true);
     }
 }

@@ -3,13 +3,16 @@ package markup;
 import java.util.List;
 
 public class UnorderedList extends AbstractMarkupList {
-    private static final Tag TAG = new Tag("", "list", "");
-
     public UnorderedList(List<ListItem> content) {
-        super(content, TAG);
+        super(content);
     }
 
     public UnorderedList(ListItem content) {
-        super(content, TAG);
+        super(content);
+    }
+
+    @Override
+    protected void generateBBTagImpl(StringBuilder sb, boolean closing) {
+        sb.append(closing ? "[/list]" : "[list]");
     }
 }

@@ -20,7 +20,7 @@ public class Md2Html {
         Document parsed;
         try {
             String input = Files.readString(Paths.get(args[0]), StandardCharsets.UTF_8);
-            parsed = Document.parse(input);
+            parsed = MarkupParser.parseMarkdown(input);
         } catch (IOException e) {
             System.err.println("Could not read from input file: " + e.getMessage());
             return;

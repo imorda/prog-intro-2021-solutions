@@ -3,14 +3,12 @@ package markup;
 import java.util.List;
 
 public class ListItem extends AbstractMarkupTaggedGroup implements MarkupSerializable {
-    private static final Tag TAG = new Tag("", "[*]", "", "", "");
-
     public ListItem(List<MarkupStructure> content) {
-        super(content, TAG);
+        super(content);
     }
 
     public ListItem(MarkupStructure content) {
-        super(content, TAG);
+        super(content);
     }
 
     @Override
@@ -20,6 +18,21 @@ public class ListItem extends AbstractMarkupTaggedGroup implements MarkupSeriali
 
     @Override
     public void toHtml(StringBuilder sb) {
+        throw new UnsupportedOperationException("HTML is unsupported for Lists");
+    }
+
+    @Override
+    protected void generateMDTagImpl(StringBuilder sb, boolean closing) {
+        throw new UnsupportedOperationException("Markdown is unsupported for Lists");
+    }
+
+    @Override
+    protected void generateBBTagImpl(StringBuilder sb, boolean closing) {
+        sb.append(closing ? "" : "[*]");
+    }
+
+    @Override
+    protected void generateHTMLTagImpl(StringBuilder sb, boolean closing) {
         throw new UnsupportedOperationException("HTML is unsupported for Lists");
     }
 }

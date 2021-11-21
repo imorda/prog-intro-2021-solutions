@@ -2,27 +2,27 @@ package markup;
 
 import java.util.List;
 
-public class Strikeout extends AbstractMarkupTaggedGroup implements MarkupCombinable {
-    public Strikeout(List<MarkupCombinable> content) {
+public class Unformatted extends AbstractMarkupTaggedGroup implements MarkupCombinable {
+    public Unformatted(List<Text> content) {
         super(content);
     }
 
-    public Strikeout(MarkupCombinable content) {
+    public Unformatted(Text content) {
         super(content);
     }
 
     @Override
     protected void generateMDTagImpl(StringBuilder sb, boolean closing) {
-        sb.append("~");
+        sb.append("```");
     }
 
     @Override
     protected void generateBBTagImpl(StringBuilder sb, boolean closing) {
-        sb.append(closing ? "[/s]" : "[s]");
+        throw new UnsupportedOperationException("BB code in unsupported for 'Unformatted'");
     }
 
     @Override
     protected void generateHTMLTagImpl(StringBuilder sb, boolean closing) {
-        sb.append(closing ? "</s>" : "<s>");
+        sb.append(closing ? "</pre>" : "<pre>");
     }
 }

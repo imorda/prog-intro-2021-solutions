@@ -1,7 +1,5 @@
 package markup;
 
-import md2html.MarkupCombinableParser;
-
 import java.util.Objects;
 
 public class Text implements MarkupCombinable {
@@ -9,20 +7,6 @@ public class Text implements MarkupCombinable {
 
     public Text(String content) {
         this.content = Objects.requireNonNull(content);
-    }
-
-    public static Text parseMD(String data, MutableRange range) {
-        for (int i = range.from; i < range.to; i++) {
-            if (data.charAt(i) == '\\') {
-                range.to = i + 1;
-                return new Text(data.substring(range.from, range.to - 1));
-            }
-            if (MarkupCombinableParser.isMarkupElementMD(data, i) && i > range.from) {
-                range.to = i;
-            }
-        }
-
-        return new Text(data.substring(range.from, range.to));
     }
 
     private void toStringBuilder(StringBuilder sb) {
