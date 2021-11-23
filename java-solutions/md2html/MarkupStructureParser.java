@@ -1,5 +1,6 @@
 package md2html;
 
+import game.PositionedString;
 import markup.*;
 
 import java.util.ArrayList;
@@ -9,20 +10,19 @@ public class MarkupStructureParser {
     private MarkupStructureParser() {
     }
 
-    public static MarkupStructure parseMD(final String data, final MutableInt range) {
-        if (range.get() >= data.length()) {
+    private static MarkupStructure parseSingleStructure(final PositionedString data) {
+        if (data.isExhausted()) {
             return null;
         }
 
         final List<MarkupCombinable> result = new ArrayList<>();
 
-        final int headlineLevel = validateHeadlineBorder(data, range);
-        if (headlineLevel > 0 || validateParagraph(data, range)) {
-            while (range.get() < data.length() && !data.startsWith("\n\n", range.get()) &&
-                    !data.startsWith("\r\n\r\n", range.get())) {
-                final var parsed = MarkupCombinableParser.parseMD(data, range);
+        final int headlineLevel = validateHeadlineBorder(data);
+        if (headlineLevel > 0 || validateParagraph(data)) {
+            while (!data.isExhausted() && !data.startsWith("\n\n", "\r\n\r\n")) {
+                final var parsed = MarkupCombinableParser.parseMD(data);
                 if (parsed == null) {
-                    throw new AssertionError();
+                    throw new AssertionError("Couldn't parse a markup object");
                 }
                 result.add(parsed);
             }
@@ -36,36 +36,34 @@ public class MarkupStructureParser {
         return null;
     }
 
-    private static int validateHeadlineBorder(final String data, final MutableInt start) {
-        int pos = start.get();
-        if (pos < data.length() && !(pos > 0 && data.charAt(pos - 1) == '\\')) {
-            int level = 0;
-            while (pos < data.length() && data.charAt(pos) == '#') {
-                level++;
-                pos++;
-            }
-            if (level > 0 && pos < data.length() && data.charAt(pos) == ' ') {
-                start.set(pos + 1);
-                return level;
-            }
+    private static int validateHeadlineBorder(final PositionedString data) {
+        int startPos = data.getPos();
+        int level = 0;
+        while (data.isTag("#")) {
+            level++;
+            data.incPos();
         }
+        if (level > 0 && !data.isExhausted() && data.getChar() == ' ') {
+            data.incPos();
+            return level;
+        }
+        data.setPos(startPos);
         return 0;
     }
 
-    private static boolean validateParagraph(final String data, final MutableInt range) {
-        return range.get() < data.length() && data.charAt(range.get()) != '\n' && data.charAt(range.get()) != '\r';
+    private static boolean validateParagraph(final PositionedString data) {
+        return !data.isExhausted() && "\r\n".indexOf(data.getChar()) == -1;
     }
 
     public static Document parseMarkdown(final String data) {
-        final MutableInt pos = new MutableInt(0);
-
+        PositionedString positionedData = new PositionedString(data);
         final List<MarkupStructure> result = new ArrayList<>();
 
-        while (pos.get() < data.length()) {
-            final MarkupStructure struct = parseMD(data, pos);
+        while (!positionedData.isExhausted()) {
+            final MarkupStructure struct = parseSingleStructure(positionedData);
 
             if (struct == null) {
-                pos.set(pos.get() + 1);
+                positionedData.incPos();
             } else {
                 result.add(struct);
             }

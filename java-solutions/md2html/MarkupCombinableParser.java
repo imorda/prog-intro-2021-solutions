@@ -1,73 +1,68 @@
 package md2html;
 
+import game.PositionedString;
 import markup.*;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 public class MarkupCombinableParser {
-
-    private static final List<ParseableTypes> TAGGED_COMBINABLE_TYPES = List.of(
-            new ParseableTypes(Strong.class, "__", "**"),
-            new ParseableTypes(Unformatted.class, "```"),
-            new ParseableTypes(Strikeout.class, "--"),
-            new ParseableTypes(Emphasis.class, "*", "_"),
-            new ParseableTypes(Code.class, "`")
+    private final static List<TagDescription> COMBINABLE_TAGS = List.of(
+            new TagDescription("```", null),
+            new TagDescription("__", Strong::new),
+            new TagDescription("**", Strong::new),
+            new TagDescription("--", Strikeout::new),
+            new TagDescription("*", Emphasis::new),
+            new TagDescription("_", Emphasis::new),
+            new TagDescription("`", Code::new)
     );
 
     private MarkupCombinableParser() {
     }
 
-    public static MarkupCombinable parseMD(final String data, final MutableInt range) {
-        if (range.get() >= data.length()) {
+    public static MarkupCombinable parseMD(PositionedString data) {
+        if (data.isExhausted()) {
             return null;
         }
 
-
-        for (final ParseableTypes i : TAGGED_COMBINABLE_TYPES) {
-            final List<MarkupCombinable> result = new ArrayList<>();
-            final String detectedTag = detectLeftBorder(data, range, i.mdTag());
-            try {
-                if (detectedTag != null) {
-                    range.set(range.get() + detectedTag.length());
-
-                    if (i.type() == Unformatted.class) {
-                        final Unformatted parsed = parseUnformatted(data, range, detectedTag);
-                        if (parsed == null) {
-                            continue;
-                        }
-
-                        return parsed;
-                    }
-
-                    while (range.get() < data.length() && !validateRightBorder(data, range, detectedTag)) {
-                        result.add(parseMD(data, range));
-                    }
-                    range.set(range.get() + detectedTag.length());
-                    return i.type().getDeclaredConstructor(List.class).newInstance(result);
+        String detectedTag = detectOpenTagType(data, "```");
+        if (detectedTag != null) {
+            data.incPos(detectedTag.length());
+            int startPos = data.getPos();
+            StringBuilder unformattedText = new StringBuilder();
+            while (!data.isExhausted()) {
+                if (data.isTag(detectedTag)) {
+                    data.incPos(detectedTag.length());
+                    return new Unformatted(new Text(unformattedText.toString()));
                 }
-            } catch (final NoSuchMethodException e) {
-                throw new ClassFormatError(i.type().getName() + " doesn't have a compatible constructor. "
-                        + e.getMessage());
-            } catch (final InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                throw new ClassFormatError(i.type().getName() + " couldn't be instantiated: "
-                        + e.getMessage());
+                unformattedText.append(data.getChar());
+                data.incPos();
+            }
+            data.setPos(startPos);
+        }
+
+        for (var i : COMBINABLE_TAGS) {
+            if (i.constructor != null) {
+                MarkupCombinable parsed = tryParse(data, i);
+                if (parsed != null) {
+                    return parsed;
+                }
             }
         }
 
-        final StringBuilder textBuilder = new StringBuilder();
+        StringBuilder textBuilder = new StringBuilder();
 
         do {
-            if (data.charAt(range.get()) != '\\') {
-                textBuilder.append(data.charAt(range.get()));
+            if (data.getChar() != '\\') {
+                textBuilder.append(data.getChar());
             }
-            range.set(range.get() + 1);
-        } while (range.get() < data.length() && !isTagSymbol(data, range) &&
-                !(data.startsWith("\r\n\r\n", range.get()) || data.startsWith("\n\n", range.get())));
+            data.incPos();
+        } while (!data.isExhausted() && !isTagSymbol(data) &&
+                !(data.startsWith("\r\n\r\n", "\n\n")));
 
-        if (range.get() >= data.length()) {
-            while (!textBuilder.isEmpty() &&
+        if (data.isExhausted()) {
+            while (textBuilder.length() > 0 &&
                     "\r\n".contains(textBuilder.subSequence(textBuilder.length() - 1, textBuilder.length()))) {
                 textBuilder.deleteCharAt(textBuilder.length() - 1);
             }
@@ -75,41 +70,45 @@ public class MarkupCombinableParser {
         return new Text(textBuilder.toString());
     }
 
-    private static boolean isTagSymbol(final String data, final MutableInt pos) {
-        for (final ParseableTypes i : TAGGED_COMBINABLE_TYPES) {
-            for (final String j : i.mdTag()) {
-                if (pos.get() < data.length() && data.startsWith(j, pos.get()) &&
-                        !(pos.get() > 0 && data.charAt(pos.get() - 1) == '\\')) {
-                    return true;
-                }
+    private static MarkupCombinable tryParse(PositionedString data, TagDescription tag) {
+        List<MarkupCombinable> result = new ArrayList<>();
+
+        String detectedTag = detectOpenTagType(data, tag.tag);
+        if (detectedTag != null) {
+            data.incPos(detectedTag.length());
+            while (!data.isExhausted() && !isCloseTag(data, detectedTag)) {
+                result.add(parseMD(data));
+            }
+            data.incPos(detectedTag.length());
+            return tag.constructor.apply(result);
+        }
+        return null;
+    }
+
+    private static boolean isTagSymbol(PositionedString data) {
+        for (TagDescription i : COMBINABLE_TAGS) {
+            if (data.isTag(i.tag)) {
+                return true;
             }
         }
         return false;
     }
 
-    private static String detectLeftBorder(final String data, final MutableInt pos, final String... tag) {
+    private static String detectOpenTagType(final PositionedString data, final String... tag) {
         for (final String i : tag) {
-            if (pos.get() < data.length() && data.startsWith(i, pos.get()) &&
-                    !(pos.get() + i.length() < data.length() &&
-                            ("\n\r ").contains(Character.toString(data.charAt(pos.get() + i.length())))) &&
-                    !(pos.get() > 0 && data.charAt(pos.get() - 1) == '\\')) {
+            if (data.isValidOpenTag(i)) {
                 return i;
             }
         }
         return null;
     }
 
-    private static boolean validateRightBorder(final String data, final MutableInt pos, final String... tag) {
-        for (final String i : tag) {
-            if (pos.get() > 0 && pos.get() < data.length() && data.startsWith(i, pos.get()) &&
-                    "\n\r ".indexOf(data.charAt(pos.get() - 1)) == -1  &&
-                    data.charAt(pos.get() - 1) != '\\') {
-
-                for (final ParseableTypes j : TAGGED_COMBINABLE_TYPES) {
-                    for (final String k : j.mdTag()) {
-                        if (k.length() > i.length() && data.startsWith(k, pos.get())) {
-                            return false;
-                        }
+    private static boolean isCloseTag(final PositionedString data, String... tag) {
+        for (String i : tag) {
+            if (data.isValidCloseTag(i)) {
+                for (TagDescription j : COMBINABLE_TAGS) {
+                    if (j.tag.length() > i.length() && data.isValidCloseTag(j.tag)) {
+                        return false;
                     }
                 }
                 return true;
@@ -118,21 +117,6 @@ public class MarkupCombinableParser {
         return false;
     }
 
-    private static Unformatted parseUnformatted(final String data, final MutableInt pos, final String tag) {
-        final MutableInt startPos = pos.copy();
-        final StringBuilder result = new StringBuilder();
-        while (pos.get() < data.length()) {
-            if (data.startsWith(tag, pos.get())) {
-                pos.set(pos.get() + tag.length());
-                return new Unformatted(List.of(new Text(result.toString())));
-            }
-            result.append(data.charAt(pos.get()));
-            pos.set(pos.get() + 1);
-        }
-        pos.set(startPos.get());
-        return null;
-    }
-
-    private static record ParseableTypes(Class<? extends MarkupCombinable> type, String... mdTag) {
+    private record TagDescription(String tag, Function<List<MarkupCombinable>, MarkupCombinable> constructor) {
     }
 }
