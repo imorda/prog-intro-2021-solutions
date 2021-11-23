@@ -19,8 +19,8 @@ public class Md2Html {
 
         Document parsed;
         try {
-            String input = Files.readString(Paths.get(args[0]), StandardCharsets.UTF_8);
-            parsed = MarkupParser.parseMarkdown(input);
+            final String input = Files.readString(Paths.get(args[0]));
+            parsed = MarkupStructureParser.parseMarkdown(input);
         } catch (IOException e) {
             System.err.println("Could not read from input file: " + e.getMessage());
             return;

@@ -1,8 +1,6 @@
 package md2html;
 
-import markup.MarkupCombinable;
-import markup.Text;
-import markup.Unformatted;
+import markup.*;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -10,24 +8,32 @@ import java.util.List;
 
 public class MarkupCombinableParser {
 
+    private static final List<ParseableTypes> TAGGED_COMBINABLE_TYPES = List.of(
+            new ParseableTypes(Strong.class, "__", "**"),
+            new ParseableTypes(Unformatted.class, "```"),
+            new ParseableTypes(Strikeout.class, "--"),
+            new ParseableTypes(Emphasis.class, "*", "_"),
+            new ParseableTypes(Code.class, "`")
+    );
+
     private MarkupCombinableParser() {
     }
 
-    public static MarkupCombinable parseMD(String data, MutableInt range) {
+    public static MarkupCombinable parseMD(final String data, final MutableInt range) {
         if (range.get() >= data.length()) {
             return null;
         }
 
 
-        for (ParseableTypes i : ParseableTypes.taggedCombinableTypes) {
-            List<MarkupCombinable> result = new ArrayList<>();
-            String detectedTag = detectLeftBorder(data, range, i.mdTag());
+        for (final ParseableTypes i : TAGGED_COMBINABLE_TYPES) {
+            final List<MarkupCombinable> result = new ArrayList<>();
+            final String detectedTag = detectLeftBorder(data, range, i.mdTag());
             try {
                 if (detectedTag != null) {
                     range.set(range.get() + detectedTag.length());
 
                     if (i.type() == Unformatted.class) {
-                        Unformatted parsed = parseUnformatted(data, range, detectedTag);
+                        final Unformatted parsed = parseUnformatted(data, range, detectedTag);
                         if (parsed == null) {
                             continue;
                         }
@@ -41,16 +47,16 @@ public class MarkupCombinableParser {
                     range.set(range.get() + detectedTag.length());
                     return i.type().getDeclaredConstructor(List.class).newInstance(result);
                 }
-            } catch (NoSuchMethodException e) {
+            } catch (final NoSuchMethodException e) {
                 throw new ClassFormatError(i.type().getName() + " doesn't have a compatible constructor. "
                         + e.getMessage());
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            } catch (final InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new ClassFormatError(i.type().getName() + " couldn't be instantiated: "
                         + e.getMessage());
             }
         }
 
-        StringBuilder textBuilder = new StringBuilder();
+        final StringBuilder textBuilder = new StringBuilder();
 
         do {
             if (data.charAt(range.get()) != '\\') {
@@ -61,7 +67,7 @@ public class MarkupCombinableParser {
                 !(data.startsWith("\r\n\r\n", range.get()) || data.startsWith("\n\n", range.get())));
 
         if (range.get() >= data.length()) {
-            while (textBuilder.length() > 0 &&
+            while (!textBuilder.isEmpty() &&
                     "\r\n".contains(textBuilder.subSequence(textBuilder.length() - 1, textBuilder.length()))) {
                 textBuilder.deleteCharAt(textBuilder.length() - 1);
             }
@@ -69,9 +75,9 @@ public class MarkupCombinableParser {
         return new Text(textBuilder.toString());
     }
 
-    private static boolean isTagSymbol(String data, MutableInt pos) {
-        for (ParseableTypes i : ParseableTypes.taggedCombinableTypes) {
-            for (String j : i.mdTag()) {
+    private static boolean isTagSymbol(final String data, final MutableInt pos) {
+        for (final ParseableTypes i : TAGGED_COMBINABLE_TYPES) {
+            for (final String j : i.mdTag()) {
                 if (pos.get() < data.length() && data.startsWith(j, pos.get()) &&
                         !(pos.get() > 0 && data.charAt(pos.get() - 1) == '\\')) {
                     return true;
@@ -81,8 +87,8 @@ public class MarkupCombinableParser {
         return false;
     }
 
-    private static String detectLeftBorder(String data, MutableInt pos, String... tag) {
-        for (String i : tag) {
+    private static String detectLeftBorder(final String data, final MutableInt pos, final String... tag) {
+        for (final String i : tag) {
             if (pos.get() < data.length() && data.startsWith(i, pos.get()) &&
                     !(pos.get() + i.length() < data.length() &&
                             ("\n\r ").contains(Character.toString(data.charAt(pos.get() + i.length())))) &&
@@ -93,14 +99,14 @@ public class MarkupCombinableParser {
         return null;
     }
 
-    private static boolean validateRightBorder(String data, MutableInt pos, String... tag) {
-        for (String i : tag) {
+    private static boolean validateRightBorder(final String data, final MutableInt pos, final String... tag) {
+        for (final String i : tag) {
             if (pos.get() > 0 && pos.get() < data.length() && data.startsWith(i, pos.get()) &&
-                    !("\n\r ").contains(Character.toString(data.charAt(pos.get() - 1))) &&
+                    "\n\r ".indexOf(data.charAt(pos.get() - 1)) == -1  &&
                     data.charAt(pos.get() - 1) != '\\') {
 
-                for (ParseableTypes j : ParseableTypes.taggedCombinableTypes) {
-                    for (String k : j.mdTag()) {
+                for (final ParseableTypes j : TAGGED_COMBINABLE_TYPES) {
+                    for (final String k : j.mdTag()) {
                         if (k.length() > i.length() && data.startsWith(k, pos.get())) {
                             return false;
                         }
@@ -112,9 +118,9 @@ public class MarkupCombinableParser {
         return false;
     }
 
-    private static Unformatted parseUnformatted(String data, MutableInt pos, String tag) {
-        MutableInt startPos = pos.copy();
-        StringBuilder result = new StringBuilder();
+    private static Unformatted parseUnformatted(final String data, final MutableInt pos, final String tag) {
+        final MutableInt startPos = pos.copy();
+        final StringBuilder result = new StringBuilder();
         while (pos.get() < data.length()) {
             if (data.startsWith(tag, pos.get())) {
                 pos.set(pos.get() + tag.length());
@@ -125,5 +131,8 @@ public class MarkupCombinableParser {
         }
         pos.set(startPos.get());
         return null;
+    }
+
+    private static record ParseableTypes(Class<? extends MarkupCombinable> type, String... mdTag) {
     }
 }
