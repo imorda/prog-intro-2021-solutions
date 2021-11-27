@@ -1,7 +1,6 @@
 package game;
 
-import java.util.Scanner;
-
+@Deprecated
 public class CheatingPlayer implements Player {
     @Override
     public Move makeMove(Position position) {

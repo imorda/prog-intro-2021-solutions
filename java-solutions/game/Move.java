@@ -23,6 +23,10 @@ public class Move {
         return value;
     }
 
+    public IntPair getPosition() {
+        return new IntPair(this.row, this.col);
+    }
+
     @Override
     public String toString() {
         return String.format("Move(%s, %d, %d)", value, row + 1, col + 1);

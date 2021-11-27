@@ -1,6 +1,5 @@
 package md2html;
 
-import game.PositionedString;
 import markup.*;
 
 import java.util.ArrayList;
