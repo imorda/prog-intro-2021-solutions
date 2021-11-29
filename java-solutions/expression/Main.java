@@ -15,7 +15,7 @@ public class Main {
                     new Const(1)
             ).evaluate(scanner.nextInt()));
         } catch (InputMismatchException e) {
-            System.err.println("Wrong input format. Please eneter a number. " + e.getMessage());
+            System.err.println("Wrong input format. Please enter a number. " + e.getMessage());
         } catch (NoSuchElementException | IllegalStateException e) {
             System.err.println("Error reading from stdin. " + e.getMessage());
         }
