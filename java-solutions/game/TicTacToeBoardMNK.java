@@ -17,8 +17,8 @@ public class TicTacToeBoardMNK extends Abstract2DBoard {
     );
     protected final int winRowLen;
 
-    public TicTacToeBoardMNK(int brdRowCount, int brdColumnCount, int winRowLen) {
-        super(brdRowCount, brdColumnCount);
+    public TicTacToeBoardMNK(int brdRowCount, int brdColumnCount, int winRowLen, Cell firstMove) {
+        super(brdRowCount, brdColumnCount, firstMove);
         this.winRowLen = winRowLen;
     }
 

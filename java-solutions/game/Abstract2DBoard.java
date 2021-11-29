@@ -7,12 +7,12 @@ public abstract class Abstract2DBoard implements Board, Position {
     protected Cell turn;
     protected int availableTurns;
 
-    public Abstract2DBoard(int brdRowCount, int brdColumnCount) {
+    public Abstract2DBoard(int brdRowCount, int brdColumnCount, Cell firstMove) {
         field = new Cell[brdRowCount][brdColumnCount];
         for (Cell[] row : field) {
             Arrays.fill(row, Cell.EMPTY);
         }
-        turn = Cell.BLUE;
+        turn = firstMove;
         availableTurns = brdRowCount * brdColumnCount;
     }
 

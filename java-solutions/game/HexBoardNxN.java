@@ -8,13 +8,13 @@ public class HexBoardNxN extends Abstract2DBoard {
     private static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_BLUE = "\u001B[34m";
 
-    private static final Map<ColorOrientation, String> BRD_ORIENTATION_TO_STRING = Map.of(
+    public static final Map<ColorOrientation, String> BRD_ORIENTATION_TO_STRING = Map.of(
             ColorOrientation.UNKNOWN, ANSI_RESET,
             ColorOrientation.X, ANSI_RED,
             ColorOrientation.Y, ANSI_BLUE
     );
 
-    private static final Map<Cell, ColorOrientation> CELL_TO_BRD_ORIENTATION = Map.of(
+    public static final Map<Cell, ColorOrientation> CELL_TO_BRD_ORIENTATION = Map.of(
             Cell.EMPTY, ColorOrientation.UNKNOWN,
             Cell.RED, ColorOrientation.X,
             Cell.BLUE, ColorOrientation.Y
@@ -29,8 +29,8 @@ public class HexBoardNxN extends Abstract2DBoard {
             new IntPair(-1, 1)
     );
 
-    public HexBoardNxN(int sideSize) {
-        super(sideSize, sideSize);
+    public HexBoardNxN(int sideSize, Cell firstMove) {
+        super(sideSize, sideSize, firstMove);
     }
 
     @Override
@@ -43,6 +43,10 @@ public class HexBoardNxN extends Abstract2DBoard {
         IntPair position = lastMove.getPosition();
         return dfsCheckSideConnection(new boolean[field.length][field.length],
                 position, position, position);
+    }
+
+    public static String getNeutralColor(){
+        return ANSI_RESET;
     }
 
     private boolean dfsCheckSideConnection(boolean[][] markedCells,

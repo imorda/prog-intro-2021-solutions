@@ -33,7 +33,7 @@ public class MainMNK {
         }
 
         final int result = new TwoPlayerGame(
-                new TicTacToeBoardMNK(m, n, k),
+                new TicTacToeBoardMNK(m, n, k, Cell.BLUE),
                 new RandomPlayer(),
 //                new SequentialPlayer()
                 new HumanPlayer(in)
