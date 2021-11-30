@@ -1,14 +1,21 @@
 package expression;
 
+import java.math.BigInteger;
+
 public class Const extends Operand {
-    private final int value;
+    private final Number value;
 
     public Const(int value) {
         super();
         this.value = value;
     }
 
-    public int getValue() {
+    public Const(BigInteger value) {
+        super();
+        this.value = value;
+    }
+
+    public Number getValue() {
         return value;
     }
 
@@ -18,14 +25,27 @@ public class Const extends Operand {
     }
 
     @Override
+    public BigInteger evaluate(BigInteger x) {
+        if(value instanceof BigInteger){
+            return (BigInteger) value;
+        }
+        return BigInteger.valueOf(value.longValue());
+    }
+
+    @Override
+    public int evaluate(int x, int y, int z) {
+        return evaluate(x);
+    }
+
+    @Override
     public int evaluate(int x) {
-        return value;
+        return value.intValue();
     }
 
     @Override
     protected boolean valueEqualsImpl(Object that) {
         if (that instanceof Const) {
-            return this.value == ((Const) that).value;
+            return this.value.equals(((Const) that).value);
         }
         return false;
     }
@@ -33,6 +53,6 @@ public class Const extends Operand {
 
     @Override
     public int hashCode() {
-        return value;
+        return value.hashCode();
     }
 }

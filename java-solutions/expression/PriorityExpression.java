@@ -1,6 +1,6 @@
 package expression;
 
-public abstract class PriorityExpression implements Expression, ToMiniString {
+public abstract class PriorityExpression implements Expression, TripleExpression, BigIntegerExpression, ToMiniString {
     private final int priority;
     private final int localPriority;
 
