@@ -55,7 +55,7 @@ public class MarkupStructureParser {
     }
 
     public static Document parseMarkdown(final String data) {
-        PositionedString positionedData = new PositionedString(data);
+        final PositionedString positionedData = new PositionedString(data);
         final List<MarkupStructure> result = new ArrayList<>();
 
         while (!positionedData.isExhausted()) {

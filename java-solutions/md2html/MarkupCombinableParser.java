@@ -20,16 +20,16 @@ public class MarkupCombinableParser {
     private MarkupCombinableParser() {
     }
 
-    public static MarkupCombinable parseMD(PositionedString data) {
+    public static MarkupCombinable parseMD(final PositionedString data) {
         if (data.isExhausted()) {
             return null;
         }
 
-        String detectedTag = detectOpenTagType(data, "```");
+        final String detectedTag = detectOpenTagType(data, "```");
         if (detectedTag != null) {
             data.incPos(detectedTag.length());
-            int startPos = data.getPos();
-            StringBuilder unformattedText = new StringBuilder();
+            final int startPos = data.getPos();
+            final StringBuilder unformattedText = new StringBuilder();
             while (!data.isExhausted()) {
                 if (data.isTag(detectedTag)) {
                     data.incPos(detectedTag.length());
@@ -41,16 +41,16 @@ public class MarkupCombinableParser {
             data.setPos(startPos);
         }
 
-        for (var i : COMBINABLE_TAGS) {
+        for (final var i : COMBINABLE_TAGS) {
             if (i.constructor != null) {
-                MarkupCombinable parsed = tryParse(data, i);
+                final MarkupCombinable parsed = tryParse(data, i);
                 if (parsed != null) {
                     return parsed;
                 }
             }
         }
 
-        StringBuilder textBuilder = new StringBuilder();
+        final StringBuilder textBuilder = new StringBuilder();
 
         do {
             if (data.getChar() != '\\') {
@@ -69,10 +69,10 @@ public class MarkupCombinableParser {
         return new Text(textBuilder.toString());
     }
 
-    private static MarkupCombinable tryParse(PositionedString data, TagDescription tag) {
-        List<MarkupCombinable> result = new ArrayList<>();
+    private static MarkupCombinable tryParse(final PositionedString data, final TagDescription tag) {
+        final List<MarkupCombinable> result = new ArrayList<>();
 
-        String detectedTag = detectOpenTagType(data, tag.tag);
+        final String detectedTag = detectOpenTagType(data, tag.tag);
         if (detectedTag != null) {
             data.incPos(detectedTag.length());
             while (!data.isExhausted() && !isCloseTag(data, detectedTag)) {
@@ -84,8 +84,8 @@ public class MarkupCombinableParser {
         return null;
     }
 
-    private static boolean isTagSymbol(PositionedString data) {
-        for (TagDescription i : COMBINABLE_TAGS) {
+    private static boolean isTagSymbol(final PositionedString data) {
+        for (final TagDescription i : COMBINABLE_TAGS) {
             if (data.isTag(i.tag)) {
                 return true;
             }
@@ -102,10 +102,10 @@ public class MarkupCombinableParser {
         return null;
     }
 
-    private static boolean isCloseTag(final PositionedString data, String... tag) {
-        for (String i : tag) {
+    private static boolean isCloseTag(final PositionedString data, final String... tag) {
+        for (final String i : tag) {
             if (data.isValidCloseTag(i)) {
-                for (TagDescription j : COMBINABLE_TAGS) {
+                for (final TagDescription j : COMBINABLE_TAGS) {
                     if (j.tag.length() > i.length() && data.isValidCloseTag(j.tag)) {
                         return false;
                     }
