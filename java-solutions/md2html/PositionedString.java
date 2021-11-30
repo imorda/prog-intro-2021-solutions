@@ -48,7 +48,7 @@ public class PositionedString {
     }
 
     public boolean startsWith(String... substr) {
-        for (String i : substr) {
+        for (final String i : substr) {
             if (data.startsWith(i, pos)) {
                 return true;
             }
