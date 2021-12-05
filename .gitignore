@@ -1,4 +1,4 @@
-# Do not store hidden files and directories, inclding .idea project
+# Do not store hidden files and directories, including .idea project
 .*
 
 # Do not store anything starting with _
