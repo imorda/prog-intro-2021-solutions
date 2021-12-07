@@ -1,8 +1,8 @@
-import java.io.Reader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.InputStreamReader;
 
 public class ReverseMin2 {
     public static void main(String[] args) {

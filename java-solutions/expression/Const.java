@@ -26,7 +26,7 @@ public class Const extends Operand {
 
     @Override
     public BigInteger evaluate(BigInteger x) {
-        if(value instanceof BigInteger){
+        if (value instanceof BigInteger) {
             return (BigInteger) value;
         }
         return BigInteger.valueOf(value.longValue());

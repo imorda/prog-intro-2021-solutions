@@ -2,13 +2,16 @@ package expression;
 
 import java.math.BigInteger;
 
-public class Subtract extends NonCommutativeOperation {
+public class Subtract extends NonAssociativeOperation {
+    public final static String operationSym = "-";
+
     public Subtract(PriorityExpression left, PriorityExpression right) {
         super(left, right, 1, 0);
     }
 
+    @Override
     public String getBinaryOperationSymbol() {
-        return "-";
+        return operationSym;
     }
 
     @Override

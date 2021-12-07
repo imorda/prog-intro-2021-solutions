@@ -1,7 +1,7 @@
 package expression;
 
-public abstract class CommutativeOperation extends BinaryOperation {
-    public CommutativeOperation(PriorityExpression left, PriorityExpression right, int priority, int localPriority) {
+public abstract class AssociativeOperation extends BinaryOperation {
+    public AssociativeOperation(PriorityExpression left, PriorityExpression right, int priority, int localPriority) {
         super(left, right, priority, localPriority);
     }
 

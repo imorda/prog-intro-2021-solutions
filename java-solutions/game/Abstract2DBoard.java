@@ -61,7 +61,7 @@ public abstract class Abstract2DBoard implements Board, Position {
             return GameResult.DRAW;
         }
 
-        turn = turn == Cell.RED ? Cell.BLUE : Cell.RED;
+        turn = turn == Cell.X ? Cell.O : Cell.X;
         return GameResult.UNKNOWN;
     }
 

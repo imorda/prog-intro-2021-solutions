@@ -3,18 +3,17 @@ package game;
 import java.util.Map;
 
 public class TicTacToeBoardMNK extends Abstract2DBoard {
+    protected static final Map<Cell, String> CELL_TO_STRING = Map.of(
+            Cell.EMPTY, "•",
+            Cell.X, "X",
+            Cell.O, "0"
+    );
     private final static char VERTICAL_SEPARATOR = '│';
     private final static char VERTICAL_BOLD_SEPARATOR = '║';
     private final static char HORIZONTAL_BOLD_SEPARATOR = '═';
     private final static char H_CROSS_BOLD_SEPARATOR = '╪';
     private final static char CROSS_BOLD_SEPARATOR = '╬';
     private final static char BOLD_T_RIGHT_SEPARATOR = '╡';
-
-    private static final Map<Cell, String> CELL_TO_STRING = Map.of(
-            Cell.EMPTY, ".",
-            Cell.RED, "X",
-            Cell.BLUE, "0"
-    );
     protected final int winRowLen;
 
     public TicTacToeBoardMNK(int brdRowCount, int brdColumnCount, int winRowLen, Cell firstMove) {
@@ -34,7 +33,7 @@ public class TicTacToeBoardMNK extends Abstract2DBoard {
                 calculateRowLength(lastMove, 0, -1) + calculateRowLength(lastMove, 0, 1) + 1 >= winRowLen;
     }
 
-    private int calculateRowLength(Move lastMove, int dr, int dc) {
+    protected int calculateRowLength(Move lastMove, int dr, int dc) {
         int r = lastMove.getRow() + dr;
         int c = lastMove.getCol() + dc;
 
@@ -53,7 +52,7 @@ public class TicTacToeBoardMNK extends Abstract2DBoard {
     }
 
     @Override
-    public String toString() {
+    public String serializeHumanReadableRepresentation() {
         final int cellWidth = String.valueOf(Math.max(getBoardColumnCount(), getBoardRowCount())).length();
 
         final StringBuilder sb = new StringBuilder();

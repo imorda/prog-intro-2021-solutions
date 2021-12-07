@@ -1,8 +1,8 @@
-import java.io.Reader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
-import java.io.InputStreamReader;
 
 public class ReverseHexDec2 {
     public static void main(String[] args) {
@@ -17,7 +17,7 @@ public class ReverseHexDec2 {
                         while (inputScanner.hasNext(true)) {
                             try {
                                 String readData = inputScanner.next(true);
-                                if(readData.startsWith("0x") || readData.startsWith("0X")){
+                                if (readData.startsWith("0x") || readData.startsWith("0X")) {
                                     data.get(data.size() - 1).add(Integer.parseUnsignedInt(readData.substring(2), 16));
                                 } else {
                                     data.get(data.size() - 1).add(Integer.parseInt(readData));

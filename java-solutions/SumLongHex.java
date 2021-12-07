@@ -19,11 +19,11 @@ public class SumLongHex {
         System.out.println(answer);
     }
 
-    private static long tryParseSubstring(String string, int l, int r){
-        if(l >= 0){
-            try{
+    private static long tryParseSubstring(String string, int l, int r) {
+        if (l >= 0) {
+            try {
                 return Long.parseLong(string.substring(l, r));
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 return Long.parseUnsignedLong(string.substring(l + 2, r), 16);
             }
         }

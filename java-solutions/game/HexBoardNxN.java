@@ -4,22 +4,19 @@ import java.util.List;
 import java.util.Map;
 
 public class HexBoardNxN extends Abstract2DBoard {
+    public static final Map<Cell, ColorOrientation> CELL_TO_BRD_ORIENTATION = Map.of(
+            Cell.EMPTY, ColorOrientation.UNKNOWN,
+            Cell.X, ColorOrientation.X,
+            Cell.O, ColorOrientation.Y
+    );
     private static final String ANSI_RESET = "\u001B[0m";
     private static final String ANSI_RED = "\u001B[31m";
     private static final String ANSI_BLUE = "\u001B[34m";
-
     public static final Map<ColorOrientation, String> BRD_ORIENTATION_TO_STRING = Map.of(
             ColorOrientation.UNKNOWN, ANSI_RESET,
             ColorOrientation.X, ANSI_RED,
             ColorOrientation.Y, ANSI_BLUE
     );
-
-    public static final Map<Cell, ColorOrientation> CELL_TO_BRD_ORIENTATION = Map.of(
-            Cell.EMPTY, ColorOrientation.UNKNOWN,
-            Cell.RED, ColorOrientation.X,
-            Cell.BLUE, ColorOrientation.Y
-    );
-
     private static final List<IntPair> ADJACENT_CELL_POS = List.of(
             new IntPair(1, 0),
             new IntPair(-1, 0),
@@ -33,6 +30,10 @@ public class HexBoardNxN extends Abstract2DBoard {
         super(sideSize, sideSize, firstMove);
     }
 
+    public static String getNeutralColor() {
+        return ANSI_RESET;
+    }
+
     @Override
     public int getWinRowLen() {
         throw new UnsupportedOperationException("There is no win row length in game 'Hex'");
@@ -43,10 +44,6 @@ public class HexBoardNxN extends Abstract2DBoard {
         IntPair position = lastMove.getPosition();
         return dfsCheckSideConnection(new boolean[field.length][field.length],
                 position, position, position);
-    }
-
-    public static String getNeutralColor(){
-        return ANSI_RESET;
     }
 
     private boolean dfsCheckSideConnection(boolean[][] markedCells,
@@ -98,7 +95,7 @@ public class HexBoardNxN extends Abstract2DBoard {
     }
 
     @Override
-    public String toString() {
+    public String serializeHumanReadableRepresentation() {
         final int cellWidth = String.valueOf(Math.max(getBoardColumnCount(), getBoardRowCount())).length();
 
         final StringBuilder sb = new StringBuilder();

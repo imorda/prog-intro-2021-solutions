@@ -1,7 +1,7 @@
 package expression;
 
-public abstract class NonCommutativeOperation extends BinaryOperation {
-    public NonCommutativeOperation(PriorityExpression left, PriorityExpression right, int priority, int localPriority) {
+public abstract class NonAssociativeOperation extends BinaryOperation {
+    public NonAssociativeOperation(PriorityExpression left, PriorityExpression right, int priority, int localPriority) {
         super(left, right, priority, localPriority);
     }
 

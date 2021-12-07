@@ -1,16 +1,11 @@
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.Objects;
 import java.io.Reader;
+import java.util.Objects;
 
 public class Scanner {
-    public enum TokenType {
-        WORD, NUMBER_10, NUMBER_16
-    }
-
     private final BufferedReader reader;
     private final TokenType tokenType;
-
     private char curChar;
     private char prevChar;
 
@@ -19,6 +14,22 @@ public class Scanner {
         this.tokenType = Objects.requireNonNull(tokenType);
 
         getNewChar();
+    }
+
+    private static boolean isWord(char x) {
+        return Character.isLetter(x) || x == '\'' || Character.getType(x) == Character.DASH_PUNCTUATION;
+    }
+
+    private static boolean isNumber10(char x) {
+        return Character.isDigit(x) || x == '-';
+    }
+
+    private static boolean isNumber16(char x) {
+        return x == '-' || x == 'x' || Character.digit(x, 16) >= 0;
+    }
+
+    private static boolean isLineSeparatorChar(char x) {
+        return System.lineSeparator().indexOf(x) >= 0;
     }
 
     public void close() throws IOException {
@@ -35,11 +46,11 @@ public class Scanner {
             if (stayInLine && isEOL()) {
                 return false;
             }
-            
+
             if (checkChar(x)) {
                 return true;
             }
-            
+
             if (!getNewChar()) {
                 return false;
             }
@@ -51,11 +62,11 @@ public class Scanner {
     }
 
     public boolean isEOL(boolean skipIfTrue) throws IOException {
-        if (isLineSeparatorChar(getLastChar())){
-            if(curChar == '\n' && prevChar == '\r'){
+        if (isLineSeparatorChar(getLastChar())) {
+            if (curChar == '\n' && prevChar == '\r') {
                 return false;
             }
-            if(skipIfTrue){
+            if (skipIfTrue) {
                 return getNewChar();
             }
             return true;
@@ -95,22 +106,6 @@ public class Scanner {
         return curChar;
     }
 
-    private static boolean isWord(char x) {
-        return Character.isLetter(x) || x == '\'' || Character.getType(x) == Character.DASH_PUNCTUATION;
-    }
-
-    private static boolean isNumber10(char x) {
-        return Character.isDigit(x) || x == '-';
-    }
-
-    private static boolean isNumber16(char x) {
-        return x == '-' || x == 'x' || Character.digit(x, 16) >= 0;
-    }
-
-    private static boolean isLineSeparatorChar(char x){
-        return System.lineSeparator().indexOf(x) >= 0;
-    }
-
     private boolean checkChar(char x) {
         switch (tokenType) {
             case WORD:
@@ -133,5 +128,9 @@ public class Scanner {
             }
         }
         return stringBuilder.toString();
+    }
+
+    public enum TokenType {
+        WORD, NUMBER_10, NUMBER_16
     }
 }

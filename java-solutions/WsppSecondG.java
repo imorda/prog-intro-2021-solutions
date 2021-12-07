@@ -66,8 +66,8 @@ public class WsppSecondG {
 }
 
 class WordData {
-    public int occurenceCount = 0;
     public final IntList occurenceList;
+    public int occurenceCount = 0;
 
     public WordData() {
         occurenceList = new IntList();

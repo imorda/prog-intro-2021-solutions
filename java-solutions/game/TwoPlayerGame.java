@@ -34,20 +34,25 @@ public class TwoPlayerGame {
     }
 
     private int makeMove(Player player, int no, boolean log) {
-        final Move move = player.makeMove(new ProxyPosition(board.getPosition()));
-        final GameResult result = board.makeMove(move);
-        if (log) {
-            System.out.println();
-            System.out.println("Player: " + no);
-            System.out.println(move);
-            System.out.println(board);
-            System.out.println("Result: " + result);
+        try {
+            final Move move = player.makeMove(new ProxyPosition(board.getPosition()));
+            final GameResult result = board.makeMove(move);
+            if (log) {
+                System.out.println();
+                System.out.println("Player: " + no);
+                System.out.println(move);
+                System.out.println(board);
+                System.out.println("Result: " + result);
+            }
+            return switch (result) {
+                case WIN -> no;
+                case LOSE -> 3 - no;
+                case DRAW -> 0;
+                case UNKNOWN -> -1;
+            };
+        } catch (AssertionError e) {
+            System.out.format("Player %d disqualified%s", no, System.lineSeparator());
+            return 3 - no; //LOSE
         }
-        return switch (result) {
-            case WIN -> no;
-            case LOSE -> 3 - no;
-            case DRAW -> 0;
-            case UNKNOWN -> -1;
-        };
     }
 }

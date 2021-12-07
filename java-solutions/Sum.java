@@ -1,4 +1,4 @@
-public class Sum{
+public class Sum {
     public static void main(String[] args) {
         int answer = 0;
 
@@ -19,11 +19,11 @@ public class Sum{
         System.out.println(answer);
     }
 
-    private static int tryParseSubstring(String string, int l, int r){
-        if(l >= 0){
-            try{
+    private static int tryParseSubstring(String string, int l, int r) {
+        if (l >= 0) {
+            try {
                 return Integer.parseInt(string.substring(l, r));
-            } catch (NumberFormatException e){
+            } catch (NumberFormatException e) {
                 System.err.println(e.getMessage());
             }
         }

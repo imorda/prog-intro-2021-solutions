@@ -38,7 +38,7 @@ public class ProxyPosition implements Position {
     }
 
     @Override
-    public String toString() {
-        return origin.toString();
+    public String serializeHumanReadableRepresentation() {
+        return origin.serializeHumanReadableRepresentation();
     }
 }

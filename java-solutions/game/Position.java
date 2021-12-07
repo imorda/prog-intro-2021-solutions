@@ -12,4 +12,6 @@ public interface Position {
     int getBoardColumnCount();
 
     int getWinRowLen();
+
+    String serializeHumanReadableRepresentation();
 }

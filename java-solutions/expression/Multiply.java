@@ -2,13 +2,16 @@ package expression;
 
 import java.math.BigInteger;
 
-public class Multiply extends CommutativeOperation {
+public class Multiply extends AssociativeOperation {
+    public final static String operationSym = "*";
+
     public Multiply(PriorityExpression left, PriorityExpression right) {
         super(left, right, 0, 0);
     }
 
+    @Override
     public String getBinaryOperationSymbol() {
-        return "*";
+        return operationSym;
     }
 
     @Override

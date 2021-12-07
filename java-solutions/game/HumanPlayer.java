@@ -16,7 +16,7 @@ public class HumanPlayer implements Player {
     public Move makeMove(Position position) {
         System.out.println();
         System.out.println("Current position");
-        System.out.println(position);
+        System.out.println(position.serializeHumanReadableRepresentation());
 
         while (true) {
             System.out.println("Enter your move for " + position.getTurn());
@@ -33,7 +33,8 @@ public class HumanPlayer implements Player {
                         e.getMessage() + ")");
                 in.nextLine();
             } catch (IllegalStateException | NoSuchElementException e) {
-                System.err.println("Input error: " + e.getMessage());
+                System.out.println("Error reading data from Human");
+                throw new AssertionError("Connection with player is broken!");
             }
         }
     }

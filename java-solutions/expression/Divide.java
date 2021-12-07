@@ -2,13 +2,16 @@ package expression;
 
 import java.math.BigInteger;
 
-public class Divide extends NonCommutativeOperation {
+public class Divide extends NonAssociativeOperation {
+    public final static String operationSym = "/";
+
     public Divide(PriorityExpression left, PriorityExpression right) {
         super(left, right, 0, -1);
     }
 
+    @Override
     public String getBinaryOperationSymbol() {
-        return "/";
+        return operationSym;
     }
 
     @Override
