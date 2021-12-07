@@ -17,10 +17,14 @@ public final class ExpressionParser implements Parser {
                 Add.operationSym, new SupportedBinaryOperations(Add::new, 2),
                 Subtract.operationSym, new SupportedBinaryOperations(Subtract::new, 2),
                 Multiply.operationSym, new SupportedBinaryOperations(Multiply::new, 1),
-                Divide.operationSym, new SupportedBinaryOperations(Divide::new, 1)
+                Divide.operationSym, new SupportedBinaryOperations(Divide::new, 1),
+                Max.operationSym, new SupportedBinaryOperations(Max::new, 3),
+                Min.operationSym, new SupportedBinaryOperations(Min::new, 3)
         );
         private final Map<String, SupportedUnaryOperations> supportedUnaryOps = Map.of(
-                UnaryMinus.operationSym, new SupportedUnaryOperations(UnaryMinus::new, 0)
+                UnaryMinus.operationSym, new SupportedUnaryOperations(UnaryMinus::new, 0),
+                TZero.operationSym, new SupportedUnaryOperations(TZero::new, 0),
+                LZero.operationSym, new SupportedUnaryOperations(LZero::new, 0)
         );
         private final String supportedVariables = "xXyYzZ";
 
@@ -149,6 +153,14 @@ public final class ExpressionParser implements Parser {
             if (take('/')) {
                 return "/";
             }
+            if (take('m')) {
+                if (take('i')) {
+                    expect('n');
+                    return "min";
+                }
+                expect("ax");
+                return "max";
+            }
             return null;
         }
 
@@ -156,16 +168,24 @@ public final class ExpressionParser implements Parser {
             if (take('-')) {
                 return "-";
             }
+            if (take('t')) {
+                expect('0');
+                return "t0";
+            }
+            if (take('l')) {
+                expect('0');
+                return "l0";
+            }
             return null;
         }
 
-        final record SupportedBinaryOperations(
+        record SupportedBinaryOperations(
                 BiFunction<PriorityExpression, PriorityExpression, PriorityExpression> expConstructor,
                 int priority
         ) {
         }
 
-        final record SupportedUnaryOperations(
+        record SupportedUnaryOperations(
                 Function<PriorityExpression, PriorityExpression> expConstructor,
                 int priority
         ) {
