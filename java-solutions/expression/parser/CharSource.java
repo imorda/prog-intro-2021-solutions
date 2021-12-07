@@ -8,5 +8,11 @@ public interface CharSource {
 
     char next();
 
+    void mark();
+
+    void unmark();
+
+    void returnToMark();
+
     IllegalArgumentException error(final String message);
 }

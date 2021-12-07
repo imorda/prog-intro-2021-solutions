@@ -41,6 +41,22 @@ public class BaseParser {
         return false;
     }
 
+    protected boolean take(final String expected) {
+        source.mark();
+        final char startCh = ch;
+
+        for (final char ch : expected.toCharArray()) {
+            if (!take(ch)) {
+                source.returnToMark();
+                this.ch = startCh;
+                return false;
+            }
+        }
+
+        source.unmark();
+        return true;
+    }
+
     protected void skipWhitespace() {
         while (Character.isWhitespace(ch)) {
             take();

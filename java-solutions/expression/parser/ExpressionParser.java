@@ -37,86 +37,85 @@ public final class ExpressionParser implements Parser {
         }
 
         private PriorityExpression parseExpression() {
-            PriorityExpression res = parseElement();
+            PriorityExpression res = parseOperation();
+            skipWhitespace();
             if (eof()) {
                 return res;
             }
             throw error("Expected end-of-file");
         }
 
-        private PriorityExpression parseElement() {
-            skipWhitespace();
-            if (eof() || take(')')) {
-                throw error("Bracket-enclosed expression is empty.");
-            }
-            PriorityExpression operand = parseOperand();
-            skipWhitespace();
-            if (eof() || take(')')) {
-                return operand;
-            }
-
-            String operator = takeBinaryOperator();
-            if (operator == null) {
-                throw error("Unrecognized operator");
-            }
-            if (eof() || take(')')) {
-                throw error("Unexpected end of bracket-enclosed expression");
-            }
-
-            return parseOperation(operand, operator);
+        private PriorityExpression parseOperation() {
+            return parseOperation(null, null);
         }
 
-        private PriorityExpression parseOperation(PriorityExpression leftOperand, String operator) {
+        private PriorityExpression parseOperation(PriorityExpression prevOperand,
+                                                  SupportedBinaryOperations prevOperator) {
             skipWhitespace();
-            PriorityExpression right = parseOperand();
+
+            if (prevOperand == null) {
+                prevOperand = parseOperand();
+            }
+
+            skipWhitespace();
+
+            if (prevOperator == null) {
+                prevOperator = takeBinaryOperator();
+            }
+
+            skipWhitespace();
+            PriorityExpression rightOperand = parseOperand();
             skipWhitespace();
 
             if (eof() || take(')')) {
-                return supportedBinOps.get(operator).expConstructor.apply(leftOperand, right);
+                if (prevOperator == null) {
+                    return prevOperand;
+                }
+                return prevOperator.expConstructor().apply(prevOperand, rightOperand);
             }
 
             skipWhitespace();
-            String nextOp = takeBinaryOperator();
+            SupportedBinaryOperations nextOp = takeBinaryOperator();
             skipWhitespace();
 
-            SupportedBinaryOperations next = supportedBinOps.get(nextOp);
-            SupportedBinaryOperations cur = supportedBinOps.get(operator);
-
-            if (next.priority < cur.priority) {
-                return cur.expConstructor.apply(leftOperand, parseOperation(right, nextOp));
+            if (nextOp == null || prevOperator == null) {
+                throw error("No operator found!");
             }
-            return parseOperation(cur.expConstructor.apply(leftOperand, right), nextOp);
+
+            if (nextOp.priority() < prevOperator.priority()) {
+                return prevOperator.expConstructor().apply(prevOperand, parseOperation(rightOperand, nextOp));
+            }
+            return parseOperation(prevOperator.expConstructor().apply(prevOperand, rightOperand), nextOp);
         }
 
         private PriorityExpression parseOperand() {
             skipWhitespace();
             if (take('(')) {
-                return parseElement();
+                return parseOperation();
             }
             if (test(Character.DECIMAL_DIGIT_NUMBER)) {
                 StringBuilder number = new StringBuilder();
                 return tryExtractConst(number);
             }
 
-            if (test((x) -> supportedVariables.indexOf(x) > -1)) {
+            if (test(x -> supportedVariables.indexOf(x) > -1)) {
                 char varSymbol = take();
                 return new Variable(String.valueOf(varSymbol));
             }
-
-            String operator = takeUnaryOperator();
+            SupportedUnaryOperations operator = takeUnaryOperator();
             if (operator != null) {
-                if (test(Character.DECIMAL_DIGIT_NUMBER)) {
-                    StringBuilder number = new StringBuilder().append(operator);
+                if (operator == supportedUnaryOps.get("-") && test(Character.DECIMAL_DIGIT_NUMBER)) {
+                    StringBuilder number = new StringBuilder().append('-');
                     return tryExtractConst(number);
                 }
 
                 if (test('(')) {
-                    return supportedUnaryOps.get(operator).expConstructor.apply(new BraceEnclosed(parseOperand()));
+                    return operator.expConstructor().apply(new BraceEnclosed(parseOperand()));
                 }
 
-                return supportedUnaryOps.get(operator).expConstructor.apply(parseOperand());
+                return operator.expConstructor().apply(parseOperand());
             }
-            throw error("Unrecognized token");
+            return null;
         }
 
         private PriorityExpression tryExtractConst(StringBuilder number) {
@@ -140,41 +139,20 @@ public final class ExpressionParser implements Parser {
             }
         }
 
-        private String takeBinaryOperator() {
-            if (take('+')) {
-                return "+";
-            }
-            if (take('-')) {
-                return "-";
-            }
-            if (take('*')) {
-                return "*";
-            }
-            if (take('/')) {
-                return "/";
-            }
-            if (take('m')) {
-                if (take('i')) {
-                    expect('n');
-                    return "min";
+        private SupportedBinaryOperations takeBinaryOperator() {
+            for (Map.Entry<String, SupportedBinaryOperations> i : supportedBinOps.entrySet()) {
+                if (take(i.getKey())) {
+                    return i.getValue();
                 }
-                expect("ax");
-                return "max";
             }
             return null;
         }
 
-        private String takeUnaryOperator() {
-            if (take('-')) {
-                return "-";
-            }
-            if (take('t')) {
-                expect('0');
-                return "t0";
-            }
-            if (take('l')) {
-                expect('0');
-                return "l0";
+        private SupportedUnaryOperations takeUnaryOperator() {
+            for (Map.Entry<String, SupportedUnaryOperations> i : supportedUnaryOps.entrySet()) {
+                if (take(i.getKey())) {
+                    return i.getValue();
+                }
             }
             return null;
         }

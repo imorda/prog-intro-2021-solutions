@@ -30,16 +30,12 @@ public final class Variable extends Operand {
 
     @Override
     public int evaluate(int x, int y, int z) {
-        switch (symbol) {
-            case 'x':
-                return x;
-            case 'y':
-                return y;
-            case 'z':
-                return z;
-            default:
-                throw new IllegalStateException("Invalid Const symbol: " + symbol);
-        }
+        return switch (symbol) {
+            case 'x' -> x;
+            case 'y' -> y;
+            case 'z' -> z;
+            default -> throw new IllegalStateException("Invalid Const symbol: " + symbol);
+        };
     }
 
     @Override
