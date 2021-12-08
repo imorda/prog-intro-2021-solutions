@@ -67,7 +67,12 @@ public class Scanner {
                 return false;
             }
             if (skipIfTrue) {
-                return getNewChar();
+                if(!getNewChar()){
+                    return false;
+                }
+                if(curChar == '\n' && prevChar == '\r'){
+                    return getNewChar();
+                }
             }
             return true;
         }

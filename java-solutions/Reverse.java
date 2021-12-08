@@ -9,7 +9,7 @@ public class Reverse {
     public static void main(String[] args) {
         List<IntList> data = new ArrayList<>();
         try {
-            Reader in = new InputStreamReader(System.in, StandardCharsets.UTF_8);
+            Reader in = new InputStreamReader(System.in);
             try {
                 Scanner inputScanner = new Scanner(in, Scanner.TokenType.NUMBER_10);
                 try {
@@ -30,7 +30,7 @@ public class Reverse {
                 in.close();
             }
 
-            for (int i = data.size() - 2; i >= 0; i--) {
+            for (int i = data.size() - 1; i >= 0; i--) {
                 for (int j = data.get(i).length() - 1; j >= 0; j--) {
                     System.out.print(data.get(i).get(j));
                     System.out.print(" ");
