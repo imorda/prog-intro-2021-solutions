@@ -1,6 +1,7 @@
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,7 +9,7 @@ public class ReverseMin2 {
     public static void main(String[] args) {
         List<IntList> data = new ArrayList<>();
         try {
-            Reader in = new InputStreamReader(System.in);
+            Reader in = new InputStreamReader(System.in, StandardCharsets.UTF_8);
             try {
                 Scanner inputScanner = new Scanner(in, Scanner.TokenType.NUMBER_10);
                 try {
