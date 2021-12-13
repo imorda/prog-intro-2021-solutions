@@ -14,7 +14,9 @@ public final class BraceEnclosed extends UnaryOperation {
 
     @Override
     protected void serializeString(StringBuilder sb) {
+        sb.append('(');
         exp.serializeString(sb);
+        sb.append(')');
     }
 
     @Override
