@@ -52,7 +52,7 @@ public final class Variable extends Operand {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCodeImpl() {
         return symbol;
     }
 }

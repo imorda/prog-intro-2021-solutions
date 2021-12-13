@@ -4,6 +4,8 @@ public abstract class PriorityExpression implements Expression, TripleExpression
     private final int priority;
     private final int localPriority;
 
+    protected Integer hashCache = null;
+
     public PriorityExpression(int priority, int localPriority) {
         this.priority = priority;
         this.localPriority = localPriority;
@@ -26,6 +28,16 @@ public abstract class PriorityExpression implements Expression, TripleExpression
         serializeMini(sb);
         return sb.toString();
     }
+
+    @Override
+    public int hashCode() {
+        if(hashCache == null){
+            hashCache = hashCodeImpl();
+        }
+        return hashCache;
+    }
+
+    protected abstract int hashCodeImpl();
 
     protected int getLocalPriority() {
         return localPriority;

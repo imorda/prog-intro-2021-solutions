@@ -57,7 +57,7 @@ public class Const extends Operand {
 
 
     @Override
-    public int hashCode() {
+    public int hashCodeImpl() {
         return value.hashCode();
     }
 }

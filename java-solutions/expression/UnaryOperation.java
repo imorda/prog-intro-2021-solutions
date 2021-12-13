@@ -24,9 +24,8 @@ public abstract class UnaryOperation extends PriorityExpression {
         return false;
     }
 
-
     @Override
-    public int hashCode() {
+    public int hashCodeImpl() {
         return Objects.hash(exp, getUnaryOperationSymbol());
     }
 

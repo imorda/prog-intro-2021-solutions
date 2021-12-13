@@ -40,7 +40,7 @@ public abstract class BinaryOperation extends PriorityExpression {
     }
 
     @Override
-    public int hashCode() {
+    public int hashCodeImpl() {
         return Objects.hash(left, right, getBinaryOperationSymbol());
     }
 
