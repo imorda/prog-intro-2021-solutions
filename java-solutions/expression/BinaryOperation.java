@@ -12,12 +12,19 @@ public abstract class BinaryOperation extends PriorityExpression {
         this.right = Objects.requireNonNull(right);
     }
 
-    protected abstract String getBinaryOperationSymbol();
+    protected static void appendOptionallyWithBrackets(StringBuilder sb, PriorityExpression data, boolean brackets) {
+        if (brackets) {
+            sb.append('(');
+        }
 
-    @Override
-    public String toString() {
-        return "(" + left.toString() + " " + getBinaryOperationSymbol() + " " + right.toString() + ")";
+        data.serializeMini(sb);
+
+        if (brackets) {
+            sb.append(')');
+        }
     }
+
+    protected abstract String getBinaryOperationSymbol();
 
     @Override
     public boolean equals(Object that) {
@@ -32,21 +39,26 @@ public abstract class BinaryOperation extends PriorityExpression {
         return false;
     }
 
-
     @Override
     public int hashCode() {
         return Objects.hash(left, right, getBinaryOperationSymbol());
     }
 
-    protected void appendOptionallyWithBrackets(StringBuilder sb, String data, boolean brackets) {
-        if (brackets) {
-            sb.append('(');
-        }
+    @Override
+    protected void serializeString(StringBuilder sb) {
+        sb.append('(');
+        left.serializeString(sb);
+        sb.append(' ').append(getBinaryOperationSymbol()).append(' ');
+        right.serializeString(sb);
+        sb.append(')');
+    }
 
-        sb.append(data);
-
-        if (brackets) {
-            sb.append(')');
-        }
+    protected void serializeMiniBinary(StringBuilder sb, boolean isAssociative) {
+        appendOptionallyWithBrackets(sb, left, left.getPriority() > getPriority());
+        sb.append(' ').append(getBinaryOperationSymbol()).append(' ');
+        boolean rightPriority = right.getPriority() > getPriority()
+                || (!isAssociative && right.getPriority() == getPriority());
+        appendOptionallyWithBrackets(sb, right, rightPriority
+                || right.getPriority() == getPriority() && right.getLocalPriority() < getLocalPriority());
     }
 }

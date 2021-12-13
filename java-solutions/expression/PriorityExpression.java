@@ -13,7 +13,25 @@ public abstract class PriorityExpression implements Expression, TripleExpression
         return priority;
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        serializeString(sb);
+        return sb.toString();
+    }
+
+    @Override
+    public String toMiniString() {
+        StringBuilder sb = new StringBuilder();
+        serializeMini(sb);
+        return sb.toString();
+    }
+
     protected int getLocalPriority() {
         return localPriority;
     }
+
+    protected abstract void serializeMini(StringBuilder sb);
+
+    protected abstract void serializeString(StringBuilder sb);
 }

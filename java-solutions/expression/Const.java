@@ -20,8 +20,13 @@ public class Const extends Operand {
     }
 
     @Override
-    public String toString() {
-        return String.valueOf(value);
+    protected void serializeString(StringBuilder sb) {
+        sb.append(value);
+    }
+
+    @Override
+    protected void serializeMini(StringBuilder sb) {
+        sb.append(value);
     }
 
     @Override

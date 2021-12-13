@@ -9,20 +9,6 @@ public final class LZero extends UnaryOperation {
         super(exp, -1, 0);
     }
 
-    private static int calculateLeadingZeros(int value) {
-        if (value == 0) {
-            return 32;
-        }
-
-        int ans = 0;
-        while ((value & (1 << 31)) == 0) {
-            value <<= 1;
-            ans++;
-        }
-
-        return ans;
-    }
-
     @Override
     public String getUnaryOperationSymbol() {
         return operationSym;
@@ -30,12 +16,12 @@ public final class LZero extends UnaryOperation {
 
     @Override
     public int evaluate(int x, int y, int z) {
-        return calculateLeadingZeros(exp.evaluate(x, y, z));
+        return Integer.numberOfLeadingZeros(exp.evaluate(x, y, z));
     }
 
     @Override
     public int evaluate(int x) {
-        return calculateLeadingZeros(exp.evaluate(x));
+        return Integer.numberOfLeadingZeros(exp.evaluate(x));
     }
 
     @Override

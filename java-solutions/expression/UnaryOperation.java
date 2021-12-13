@@ -13,11 +13,6 @@ public abstract class UnaryOperation extends PriorityExpression {
     protected abstract String getUnaryOperationSymbol();
 
     @Override
-    public String toString() {
-        return getUnaryOperationSymbol() + exp.toString();
-    }
-
-    @Override
     public boolean equals(Object that) {
         if (this == that) return true;
 
@@ -36,11 +31,20 @@ public abstract class UnaryOperation extends PriorityExpression {
     }
 
     @Override
-    public String toMiniString() {
+    protected void serializeString(StringBuilder sb) {
+        sb.append(getUnaryOperationSymbol());
+        exp.serializeString(sb);
+    }
+
+    @Override
+    protected void serializeMini(StringBuilder sb) {
         if (exp.getPriority() <= getPriority()) {
-            return getUnaryOperationSymbol() + " " + exp.toMiniString();
+            sb.append(getUnaryOperationSymbol()).append(' ');
+            exp.serializeMini(sb);
         } else {
-            return getUnaryOperationSymbol() + "(" + exp.toMiniString() + ")";
+            sb.append(getUnaryOperationSymbol()).append('(');
+            exp.serializeMini(sb);
+            sb.append(')');
         }
     }
 }

@@ -8,13 +8,18 @@ public final class BraceEnclosed extends UnaryOperation {
     }
 
     @Override
-    public String toString() {
-        return "(" + super.toString() + ")";
+    public String toMiniString() {
+        return exp.toMiniString();
     }
 
     @Override
-    public String toMiniString() {
-        return exp.toMiniString();
+    protected void serializeString(StringBuilder sb) {
+        exp.serializeString(sb);
+    }
+
+    @Override
+    protected void serializeMini(StringBuilder sb) {
+        exp.serializeMini(sb);
     }
 
     @Override

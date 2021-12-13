@@ -14,8 +14,13 @@ public final class Variable extends Operand {
     }
 
     @Override
-    public String toString() {
-        return String.valueOf(symbol);
+    protected void serializeString(StringBuilder sb) {
+        sb.append(symbol);
+    }
+
+    @Override
+    protected void serializeMini(StringBuilder sb) {
+        sb.append(symbol);
     }
 
     @Override
