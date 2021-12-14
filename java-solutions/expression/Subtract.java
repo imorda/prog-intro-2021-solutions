@@ -3,6 +3,8 @@ package expression;
 import java.math.BigInteger;
 
 public class Subtract extends NonAssociativeOperation {
+    public final static String OPERATION_SYM = "-";
+
     public Subtract(PriorityExpression left, PriorityExpression right) {
         super(left, right);
     }
@@ -19,7 +21,7 @@ public class Subtract extends NonAssociativeOperation {
 
     @Override
     public String getBinaryOperationSymbol() {
-        return "-";
+        return OPERATION_SYM;
     }
 
     @Override

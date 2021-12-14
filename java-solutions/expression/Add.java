@@ -3,6 +3,8 @@ package expression;
 import java.math.BigInteger;
 
 public class Add extends AssociativeOperation {
+    public static final String OPERATION_SYM = "+";
+
     public Add(PriorityExpression left, PriorityExpression right) {
         super(left, right);
     }
@@ -19,7 +21,7 @@ public class Add extends AssociativeOperation {
 
     @Override
     public String getBinaryOperationSymbol() {
-        return "+";
+        return OPERATION_SYM;
     }
 
     @Override

@@ -15,16 +15,16 @@ public final class ExpressionParser implements Parser {
     private static class ExpressionParserImpl extends BaseParser {
         private final Map<String, SupportedBinaryOperations> supportedBinOps = Map.of(
                 Add.OPERATION_SYM, new SupportedBinaryOperations(Add::new, 2),
-                Subtract.operationSym, new SupportedBinaryOperations(Subtract::new, 2),
-                Multiply.operationSym, new SupportedBinaryOperations(Multiply::new, 1),
-                Divide.operationSym, new SupportedBinaryOperations(Divide::new, 1),
-                Max.operationSym, new SupportedBinaryOperations(Max::new, 3),
-                Min.operationSym, new SupportedBinaryOperations(Min::new, 3)
+                Subtract.OPERATION_SYM, new SupportedBinaryOperations(Subtract::new, 2),
+                Multiply.OPERATION_SYM, new SupportedBinaryOperations(Multiply::new, 1),
+                Divide.OPERATION_SYM, new SupportedBinaryOperations(Divide::new, 1),
+                Max.OPERATION_SYM, new SupportedBinaryOperations(Max::new, 3),
+                Min.OPERATION_SYM, new SupportedBinaryOperations(Min::new, 3)
         );
         private final Map<String, SupportedUnaryOperations> supportedUnaryOps = Map.of(
-                Negate.operationSym, new SupportedUnaryOperations(Negate::new, 0),
-                TZero.operationSym, new SupportedUnaryOperations(TZero::new, 0),
-                LZero.operationSym, new SupportedUnaryOperations(LZero::new, 0)
+                Negate.OPERATION_SYM, new SupportedUnaryOperations(Negate::new, 0),
+                TZero.OPERATION_SYM, new SupportedUnaryOperations(TZero::new, 0),
+                LZero.OPERATION_SYM, new SupportedUnaryOperations(LZero::new, 0)
         );
         private final String supportedVariables = "xXyYzZ";
 

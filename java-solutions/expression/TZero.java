@@ -3,6 +3,8 @@ package expression;
 import java.math.BigInteger;
 
 public final class TZero extends UnaryOperation {
+    public final static String OPERATION_SYM = "t0";
+
     public TZero(PriorityExpression exp) {
         super(exp);
     }
@@ -19,7 +21,7 @@ public final class TZero extends UnaryOperation {
 
     @Override
     public String getUnaryOperationSymbol() {
-        return "t0";
+        return OPERATION_SYM;
     }
 
     @Override

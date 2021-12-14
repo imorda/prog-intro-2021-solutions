@@ -14,17 +14,17 @@ public final class ExpressionParser implements ExceptionParser {
 
     private static class ExpressionParserImpl extends BaseParser {
         private final Map<String, SupportedBinaryOperations> supportedBinOps = Map.of(
-                "+", new SupportedBinaryOperations(CheckedAdd::new, 2),
-                CheckedSubtract.operationSym, new SupportedBinaryOperations(CheckedSubtract::new, 2),
-                CheckedMultiply.operationSym, new SupportedBinaryOperations(CheckedMultiply::new, 1),
-                CheckedDivide.operationSym, new SupportedBinaryOperations(CheckedDivide::new, 1),
-                Max.operationSym, new SupportedBinaryOperations(Max::new, 3),
-                Min.operationSym, new SupportedBinaryOperations(Min::new, 3)
+                CheckedAdd.OPERATION_SYM, new SupportedBinaryOperations(CheckedAdd::new, 2, false),
+                CheckedSubtract.OPERATION_SYM, new SupportedBinaryOperations(CheckedSubtract::new, 2, false),
+                CheckedMultiply.OPERATION_SYM, new SupportedBinaryOperations(CheckedMultiply::new, 1, false),
+                CheckedDivide.OPERATION_SYM, new SupportedBinaryOperations(CheckedDivide::new, 1, false),
+                Max.OPERATION_SYM, new SupportedBinaryOperations(Max::new, 3, true),
+                Min.OPERATION_SYM, new SupportedBinaryOperations(Min::new, 3, true)
         );
         private final Map<String, SupportedUnaryOperations> supportedUnaryOps = Map.of(
-                CheckedNegate.operationSym, new SupportedUnaryOperations(CheckedNegate::new, 0),
-                TZero.operationSym, new SupportedUnaryOperations(TZero::new, 0),
-                LZero.operationSym, new SupportedUnaryOperations(LZero::new, 0)
+                CheckedNegate.OPERATION_SYM, new SupportedUnaryOperations(CheckedNegate::new, 0),
+                TZero.OPERATION_SYM, new SupportedUnaryOperations(TZero::new, 0),
+                LZero.OPERATION_SYM, new SupportedUnaryOperations(LZero::new, 0)
         );
         private final String supportedVariables = "xXyYzZ";
 
@@ -168,7 +168,8 @@ public final class ExpressionParser implements ExceptionParser {
 
         record SupportedBinaryOperations(
                 BiFunction<PriorityExpression, PriorityExpression, PriorityExpression> expConstructor,
-                int priority
+                int priority,
+                boolean requiresWhitespace
         ) {
         }
 

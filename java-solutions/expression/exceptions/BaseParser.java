@@ -40,6 +40,10 @@ public class BaseParser {
         return Character.getType(ch) == expectedType;
     }
 
+    protected boolean testWhitespace(){
+        return Character.isWhitespace(ch);
+    }
+
     protected boolean take(final char expected) {
         if (test(expected)) {
             take();
@@ -64,10 +68,13 @@ public class BaseParser {
         return true;
     }
 
-    protected void skipWhitespace() {
-        while (Character.isWhitespace(ch)) {
+    protected boolean skipWhitespace() {
+        boolean tookAnyFlag = false;
+        while (testWhitespace()) {
             take();
+            tookAnyFlag = true;
         }
+        return tookAnyFlag;
     }
 
     protected boolean eof() {

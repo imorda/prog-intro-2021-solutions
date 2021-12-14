@@ -3,6 +3,8 @@ package expression;
 import java.math.BigInteger;
 
 public final class LZero extends UnaryOperation {
+    public final static String OPERATION_SYM = "l0";
+
     public LZero(PriorityExpression exp) {
         super(exp);
     }
@@ -19,7 +21,7 @@ public final class LZero extends UnaryOperation {
 
     @Override
     public String getUnaryOperationSymbol() {
-        return "l0";
+        return OPERATION_SYM;
     }
 
     @Override

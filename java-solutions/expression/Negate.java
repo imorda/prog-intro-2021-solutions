@@ -3,6 +3,8 @@ package expression;
 import java.math.BigInteger;
 
 public class Negate extends UnaryOperation {
+    public final static String OPERATION_SYM = "-";
+
     public Negate(PriorityExpression exp) {
         super(exp);
     }
@@ -19,7 +21,7 @@ public class Negate extends UnaryOperation {
 
     @Override
     public String getUnaryOperationSymbol() {
-        return "-";
+        return OPERATION_SYM;
     }
 
     @Override
