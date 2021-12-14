@@ -3,8 +3,6 @@ package expression;
 import java.math.BigInteger;
 
 public final class Max extends AssociativeOperation {
-    public final static String operationSym = "max";
-
     public Max(PriorityExpression left, PriorityExpression right) {
         super(left, right);
     }
@@ -21,7 +19,7 @@ public final class Max extends AssociativeOperation {
 
     @Override
     public String getBinaryOperationSymbol() {
-        return operationSym;
+        return "max";
     }
 
     @Override

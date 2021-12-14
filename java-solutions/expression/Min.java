@@ -3,8 +3,6 @@ package expression;
 import java.math.BigInteger;
 
 public final class Min extends AssociativeOperation {
-    public final static String operationSym = "min";
-
     public Min(PriorityExpression left, PriorityExpression right) {
         super(left, right);
     }
@@ -21,7 +19,7 @@ public final class Min extends AssociativeOperation {
 
     @Override
     public String getBinaryOperationSymbol() {
-        return operationSym;
+        return "min";
     }
 
     @Override
