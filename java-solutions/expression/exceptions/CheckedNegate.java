@@ -17,11 +17,18 @@ public class CheckedNegate extends Negate {
 
     @Override
     public int evaluate(int x, int y, int z) {
-        return Math.negateExact(exp.evaluate(x, y, z));
+        return negateExact(exp.evaluate(x, y, z));
     }
 
     @Override
     public int evaluate(int x) {
-        return Math.negateExact(exp.evaluate(x));
+        return negateExact(exp.evaluate(x));
+    }
+
+    private static int negateExact(int value) {
+        if (value == Integer.MIN_VALUE) {
+            throw new ArithmeticException(String.format("integer overflow (-%d)", value));
+        }
+        return -value;
     }
 }

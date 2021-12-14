@@ -17,11 +17,19 @@ public class CheckedSubtract extends Subtract {
 
     @Override
     public int evaluate(int x, int y, int z) {
-        return Math.subtractExact(left.evaluate(x, y, z), right.evaluate(x, y, z));
+        return subtractExact(left.evaluate(x, y, z), right.evaluate(x, y, z));
     }
 
     @Override
     public int evaluate(int x) {
-        return Math.subtractExact(left.evaluate(x), right.evaluate(x));
+        return subtractExact(left.evaluate(x), right.evaluate(x));
+    }
+
+    private static int subtractExact(int a, int b) {
+        int c = a - b;
+        if (b > 0 && Integer.MIN_VALUE + b > a || b < 0 && Integer.MAX_VALUE + b < a) {
+            throw new ArithmeticException(String.format("integer overflow (%d - %d)", a, b));
+        }
+        return c;
     }
 }
