@@ -6,7 +6,17 @@ public final class TZero extends UnaryOperation {
     public final static String operationSym = "t0";
 
     public TZero(PriorityExpression exp) {
-        super(exp, -1, 0);
+        super(exp);
+    }
+
+    @Override
+    protected int getPriority() {
+        return -1;
+    }
+
+    @Override
+    protected int getLocalPriority() {
+        return 0;
     }
 
     @Override

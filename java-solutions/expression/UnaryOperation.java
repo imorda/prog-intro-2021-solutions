@@ -5,8 +5,7 @@ import java.util.Objects;
 public abstract class UnaryOperation extends PriorityExpression {
     protected final PriorityExpression exp;
 
-    public UnaryOperation(PriorityExpression exp, int priority, int localPriority) {
-        super(priority, localPriority);
+    public UnaryOperation(PriorityExpression exp) {
         this.exp = Objects.requireNonNull(exp);
     }
 

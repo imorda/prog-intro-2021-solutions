@@ -6,7 +6,17 @@ public final class Max extends AssociativeOperation {
     public final static String operationSym = "max";
 
     public Max(PriorityExpression left, PriorityExpression right) {
-        super(left, right, 2, 0);
+        super(left, right);
+    }
+
+    @Override
+    protected int getPriority() {
+        return 2;
+    }
+
+    @Override
+    protected int getLocalPriority() {
+        return 0;
     }
 
     @Override

@@ -6,7 +6,17 @@ public final class LZero extends UnaryOperation {
     public final static String operationSym = "l0";
 
     public LZero(PriorityExpression exp) {
-        super(exp, -1, 0);
+        super(exp);
+    }
+
+    @Override
+    protected int getPriority() {
+        return -1;
+    }
+
+    @Override
+    protected int getLocalPriority() {
+        return 0;
     }
 
     @Override

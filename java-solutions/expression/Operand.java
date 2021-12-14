@@ -2,7 +2,17 @@ package expression;
 
 public abstract class Operand extends PriorityExpression {
     public Operand() {
-        super(-1, 0);
+        super();
+    }
+
+    @Override
+    protected int getPriority() {
+        return -1;
+    }
+
+    @Override
+    protected int getLocalPriority() {
+        return 0;
     }
 
     protected abstract boolean valueEqualsImpl(Object that);

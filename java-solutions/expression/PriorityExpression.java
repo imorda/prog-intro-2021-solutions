@@ -1,19 +1,12 @@
 package expression;
 
 public abstract class PriorityExpression implements Expression, TripleExpression, BigIntegerExpression, ToMiniString {
-    private final int priority;
-    private final int localPriority;
-
     protected Integer hashCache = null;
 
-    public PriorityExpression(int priority, int localPriority) {
-        this.priority = priority;
-        this.localPriority = localPriority;
+    public PriorityExpression() {
     }
 
-    protected int getPriority() {
-        return priority;
-    }
+    protected abstract int getPriority();
 
     @Override
     public String toString() {
@@ -31,7 +24,7 @@ public abstract class PriorityExpression implements Expression, TripleExpression
 
     @Override
     public int hashCode() {
-        if(hashCache == null){
+        if (hashCache == null) {
             hashCache = hashCodeImpl();
         }
         return hashCache;
@@ -39,9 +32,7 @@ public abstract class PriorityExpression implements Expression, TripleExpression
 
     protected abstract int hashCodeImpl();
 
-    protected int getLocalPriority() {
-        return localPriority;
-    }
+    protected abstract int getLocalPriority();
 
     protected abstract void serializeMini(StringBuilder sb);
 

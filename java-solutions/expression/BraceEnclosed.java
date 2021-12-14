@@ -4,12 +4,22 @@ import java.math.BigInteger;
 
 public final class BraceEnclosed extends UnaryOperation {
     public BraceEnclosed(PriorityExpression exp) {
-        super(exp, exp.getPriority(), 0);
+        super(exp);
     }
 
     @Override
     public String toMiniString() {
         return exp.toMiniString();
+    }
+
+    @Override
+    protected int getPriority() {
+        return exp.getPriority();
+    }
+
+    @Override
+    protected int getLocalPriority() {
+        return 0;
     }
 
     @Override

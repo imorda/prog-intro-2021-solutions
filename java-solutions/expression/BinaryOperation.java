@@ -6,8 +6,7 @@ public abstract class BinaryOperation extends PriorityExpression {
     protected final PriorityExpression left;
     protected final PriorityExpression right;
 
-    public BinaryOperation(PriorityExpression left, PriorityExpression right, int priority, int localPriority) {
-        super(priority, localPriority);
+    public BinaryOperation(PriorityExpression left, PriorityExpression right) {
         this.left = Objects.requireNonNull(left);
         this.right = Objects.requireNonNull(right);
     }

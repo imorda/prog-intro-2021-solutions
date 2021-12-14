@@ -6,7 +6,17 @@ public class Multiply extends AssociativeOperation {
     public final static String operationSym = "*";
 
     public Multiply(PriorityExpression left, PriorityExpression right) {
-        super(left, right, 0, 0);
+        super(left, right);
+    }
+
+    @Override
+    protected int getPriority() {
+        return 0;
+    }
+
+    @Override
+    protected int getLocalPriority() {
+        return 0;
     }
 
     @Override

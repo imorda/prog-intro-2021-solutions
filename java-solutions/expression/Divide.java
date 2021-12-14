@@ -6,7 +6,17 @@ public class Divide extends NonAssociativeOperation {
     public final static String operationSym = "/";
 
     public Divide(PriorityExpression left, PriorityExpression right) {
-        super(left, right, 0, -1);
+        super(left, right);
+    }
+
+    @Override
+    protected int getPriority() {
+        return 0;
+    }
+
+    @Override
+    protected int getLocalPriority() {
+        return -1;
     }
 
     @Override

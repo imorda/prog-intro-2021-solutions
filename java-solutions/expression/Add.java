@@ -2,11 +2,21 @@ package expression;
 
 import java.math.BigInteger;
 
-public final class Add extends AssociativeOperation {
+public class Add extends AssociativeOperation {
     public final static String operationSym = "+";
 
     public Add(PriorityExpression left, PriorityExpression right) {
-        super(left, right, 1, 0);
+        super(left, right);
+    }
+
+    @Override
+    protected int getPriority() {
+        return 1;
+    }
+
+    @Override
+    protected int getLocalPriority() {
+        return 0;
     }
 
     @Override

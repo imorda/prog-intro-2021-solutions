@@ -1,4 +1,4 @@
-package expression.parser;
+package expression.exceptions;
 
 import expression.*;
 
@@ -6,23 +6,23 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public final class ExpressionParser implements Parser {
+public final class ExpressionParser implements ExceptionParser {
     @Override
-    public TripleExpression parse(String expression) {
+    public TripleExpression parse(String expression) throws ParseException {
         return new ExpressionParserImpl(expression).parseExpression();
     }
 
     private static class ExpressionParserImpl extends BaseParser {
         private final Map<String, SupportedBinaryOperations> supportedBinOps = Map.of(
-                Add.operationSym, new SupportedBinaryOperations(Add::new, 2),
-                Subtract.operationSym, new SupportedBinaryOperations(Subtract::new, 2),
-                Multiply.operationSym, new SupportedBinaryOperations(Multiply::new, 1),
-                Divide.operationSym, new SupportedBinaryOperations(Divide::new, 1),
+                CheckedAdd.operationSym, new SupportedBinaryOperations(CheckedAdd::new, 2),
+                CheckedSubtract.operationSym, new SupportedBinaryOperations(CheckedSubtract::new, 2),
+                CheckedMultiply.operationSym, new SupportedBinaryOperations(CheckedMultiply::new, 1),
+                CheckedDivide.operationSym, new SupportedBinaryOperations(CheckedDivide::new, 1),
                 Max.operationSym, new SupportedBinaryOperations(Max::new, 3),
                 Min.operationSym, new SupportedBinaryOperations(Min::new, 3)
         );
         private final Map<String, SupportedUnaryOperations> supportedUnaryOps = Map.of(
-                Negate.operationSym, new SupportedUnaryOperations(Negate::new, 0),
+                CheckedNegate.operationSym, new SupportedUnaryOperations(CheckedNegate::new, 0),
                 TZero.operationSym, new SupportedUnaryOperations(TZero::new, 0),
                 LZero.operationSym, new SupportedUnaryOperations(LZero::new, 0)
         );
@@ -36,21 +36,22 @@ public final class ExpressionParser implements Parser {
             this(new StringSource(source));
         }
 
-        private PriorityExpression parseExpression() {
-            PriorityExpression res = parseOperation();
+        private PriorityExpression parseExpression() throws ParseException {
+            PriorityExpression res = parseOperation(false);
             skipWhitespace();
             if (eof()) {
                 return res;
             }
-            throw error("Expected end-of-file");
+            throw new EOFException(source);
         }
 
-        private PriorityExpression parseOperation() {
-            return parseOperation(null, null);
+        private PriorityExpression parseOperation(boolean startsWithBracket) throws ParseException {
+            return parseOperation(null, null, startsWithBracket);
         }
 
         private PriorityExpression parseOperation(PriorityExpression prevOperand,
-                                                  SupportedBinaryOperations prevOperator) {
+                                                  SupportedBinaryOperations prevOperator,
+                                                  boolean startsWithBracket) throws ParseException {
             skipWhitespace();
 
             if (prevOperand == null) {
@@ -64,10 +65,13 @@ public final class ExpressionParser implements Parser {
             }
 
             skipWhitespace();
-            PriorityExpression rightOperand = parseOperand();
+            PriorityExpression rightOperand = null;
+            if (prevOperator != null) {
+                rightOperand = parseOperand();
+            }
             skipWhitespace();
 
-            if (eof() || take(')')) {
+            if ((!startsWithBracket && eof()) || (startsWithBracket && take(')'))) {
                 if (prevOperator == null) {
                     return prevOperand;
                 }
@@ -79,19 +83,21 @@ public final class ExpressionParser implements Parser {
             skipWhitespace();
 
             if (nextOp == null || prevOperator == null) {
-                throw error("No operator found!");
+                throw new InvalidOperatorException(source, peekOrEOF());
             }
 
             if (nextOp.priority() < prevOperator.priority()) {
-                return prevOperator.expConstructor().apply(prevOperand, parseOperation(rightOperand, nextOp));
+                return prevOperator.expConstructor().apply(prevOperand, parseOperation(rightOperand, nextOp,
+                        startsWithBracket));
             }
-            return parseOperation(prevOperator.expConstructor().apply(prevOperand, rightOperand), nextOp);
+            return parseOperation(prevOperator.expConstructor().apply(prevOperand, rightOperand),
+                    nextOp, startsWithBracket);
         }
 
-        private PriorityExpression parseOperand() {
+        private PriorityExpression parseOperand() throws ParseException {
             skipWhitespace();
             if (take('(')) {
-                return parseOperation();
+                return parseOperation(true);
             }
             if (test(Character.DECIMAL_DIGIT_NUMBER)) {
                 StringBuilder number = new StringBuilder();
@@ -115,19 +121,19 @@ public final class ExpressionParser implements Parser {
 
                 return operator.expConstructor().apply(parseOperand());
             }
-            return null;
+            throw new InvalidOperandException(source, peekOrEOF());
         }
 
-        private PriorityExpression tryExtractConst(StringBuilder number) {
+        private PriorityExpression tryExtractConst(StringBuilder number) throws ParseException {
             takeInteger(number);
             try {
                 return new Const(Integer.parseInt(number.toString()));
             } catch (final NumberFormatException e) {
-                throw error("Invalid number " + number);
+                throw new NumberParseException(source, number.toString());
             }
         }
 
-        private void takeInteger(StringBuilder sb) {
+        private void takeInteger(StringBuilder sb) throws ParseException {
             if (take('0')) {
                 sb.append('0');
             } else if (between('1', '9')) {
@@ -135,7 +141,10 @@ public final class ExpressionParser implements Parser {
                     sb.append(take());
                 }
             } else {
-                throw error("Integer expected");
+                if (!eof()) {
+                    sb.append(take());
+                }
+                throw new NumberParseException(source, sb.toString());
             }
         }
 

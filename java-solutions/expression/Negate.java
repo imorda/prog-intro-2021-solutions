@@ -2,11 +2,21 @@ package expression;
 
 import java.math.BigInteger;
 
-public final class UnaryMinus extends UnaryOperation {
+public class Negate extends UnaryOperation {
     public final static String operationSym = "-";
 
-    public UnaryMinus(PriorityExpression exp) {
-        super(exp, -1, 0);
+    public Negate(PriorityExpression exp) {
+        super(exp);
+    }
+
+    @Override
+    protected int getPriority() {
+        return -1;
+    }
+
+    @Override
+    protected int getLocalPriority() {
+        return 0;
     }
 
     @Override
@@ -26,6 +36,6 @@ public final class UnaryMinus extends UnaryOperation {
 
     @Override
     public BigInteger evaluate(BigInteger x) {
-        throw new UnsupportedOperationException("Unary Minus does not support BigIntegers");
+        throw new UnsupportedOperationException("Negate does not support BigIntegers");
     }
 }
