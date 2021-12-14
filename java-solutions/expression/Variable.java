@@ -44,15 +44,19 @@ public final class Variable extends Operand {
     }
 
     @Override
-    protected boolean valueEqualsImpl(Object that) {
-        if (that instanceof Variable) {
-            return this.symbol == ((Variable) that).symbol;
+    public boolean equals(Object that) {
+        if (this == that) return true;
+
+        if (that != null) {
+            if (this.getClass() == that.getClass()) {
+                return this.symbol == ((Variable) that).symbol;
+            }
         }
         return false;
     }
 
     @Override
-    public int hashCodeImpl() {
+    public int hashCode() {
         return symbol;
     }
 }

@@ -39,8 +39,8 @@ public abstract class BinaryOperation extends PriorityExpression {
     }
 
     @Override
-    public int hashCodeImpl() {
-        return Objects.hash(left, right, getBinaryOperationSymbol());
+    public int hashCode() {
+        return Objects.hash(left, right, this.getClass());
     }
 
     @Override

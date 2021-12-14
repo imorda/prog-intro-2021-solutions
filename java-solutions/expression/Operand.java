@@ -14,18 +14,4 @@ public abstract class Operand extends PriorityExpression {
     protected int getLocalPriority() {
         return 0;
     }
-
-    protected abstract boolean valueEqualsImpl(Object that);
-
-    @Override
-    public boolean equals(Object that) {
-        if (this == that) return true;
-
-        if (that != null) {
-            if (this.getClass() == that.getClass()) {
-                return this.valueEqualsImpl(that);
-            }
-        }
-        return false;
-    }
 }

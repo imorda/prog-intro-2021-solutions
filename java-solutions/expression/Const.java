@@ -48,16 +48,19 @@ public class Const extends Operand {
     }
 
     @Override
-    protected boolean valueEqualsImpl(Object that) {
-        if (that instanceof Const) {
-            return this.value.equals(((Const) that).value);
+    public boolean equals(Object that) {
+        if (this == that) return true;
+
+        if (that != null) {
+            if (this.getClass() == that.getClass()) {
+                return this.value.equals(((Const) that).value);
+            }
         }
         return false;
     }
 
-
     @Override
-    public int hashCodeImpl() {
+    public int hashCode() {
         return value.hashCode();
     }
 }
