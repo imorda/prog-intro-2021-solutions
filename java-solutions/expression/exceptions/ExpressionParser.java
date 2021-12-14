@@ -14,7 +14,7 @@ public final class ExpressionParser implements ExceptionParser {
 
     private static class ExpressionParserImpl extends BaseParser {
         private final Map<String, SupportedBinaryOperations> supportedBinOps = Map.of(
-                CheckedAdd.operationSym, new SupportedBinaryOperations(CheckedAdd::new, 2),
+                "+", new SupportedBinaryOperations(CheckedAdd::new, 2),
                 CheckedSubtract.operationSym, new SupportedBinaryOperations(CheckedSubtract::new, 2),
                 CheckedMultiply.operationSym, new SupportedBinaryOperations(CheckedMultiply::new, 1),
                 CheckedDivide.operationSym, new SupportedBinaryOperations(CheckedDivide::new, 1),

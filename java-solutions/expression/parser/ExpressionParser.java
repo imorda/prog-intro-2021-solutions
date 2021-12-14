@@ -14,7 +14,7 @@ public final class ExpressionParser implements Parser {
 
     private static class ExpressionParserImpl extends BaseParser {
         private final Map<String, SupportedBinaryOperations> supportedBinOps = Map.of(
-                Add.operationSym, new SupportedBinaryOperations(Add::new, 2),
+                Add.OPERATION_SYM, new SupportedBinaryOperations(Add::new, 2),
                 Subtract.operationSym, new SupportedBinaryOperations(Subtract::new, 2),
                 Multiply.operationSym, new SupportedBinaryOperations(Multiply::new, 1),
                 Divide.operationSym, new SupportedBinaryOperations(Divide::new, 1),
