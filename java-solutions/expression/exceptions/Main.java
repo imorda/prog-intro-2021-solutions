@@ -25,7 +25,7 @@ public class Main {
             } catch (ParseException e) {
                 System.out.println(e.getMessage());
                 System.out.print("Rest of input:'");
-                while(e.getSource().hasNext()){
+                while (e.getSource().hasNext()) {
                     System.out.write(e.getSource().next());
                 }
                 System.out.println("'");

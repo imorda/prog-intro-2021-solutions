@@ -1,13 +1,23 @@
 package expression;
 
-import expression.Multiply;
-import expression.PriorityExpression;
-
 import java.math.BigInteger;
 
 public class CheckedMultiply extends Multiply {
     public CheckedMultiply(PriorityExpression left, PriorityExpression right) {
         super(left, right);
+    }
+
+    static int multiplyExact(int a, int b) {
+        if (a < b) {
+            int temp = a;
+            a = b;
+            b = temp;
+        }
+        int result = a * b;
+        if (b == Integer.MIN_VALUE && a == -1 || a != 0 && result / a != b) {
+            throw new ArithmeticException(String.format("integer overflow (%d * %d)", a, b));
+        }
+        return result;
     }
 
     @Override
@@ -23,18 +33,5 @@ public class CheckedMultiply extends Multiply {
     @Override
     public int evaluate(int x) {
         return multiplyExact(left.evaluate(x), right.evaluate(x));
-    }
-
-    static int multiplyExact(int a, int b) {
-        if(a < b){
-            int temp = a;
-            a = b;
-            b = temp;
-        }
-        int result = a * b;
-        if (b == Integer.MIN_VALUE && a == -1 || a != 0 && result / a != b) {
-            throw new ArithmeticException(String.format("integer overflow (%d * %d)", a, b));
-        }
-        return result;
     }
 }

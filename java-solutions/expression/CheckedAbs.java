@@ -40,8 +40,8 @@ public final class CheckedAbs extends Abs {
     }
 
     @Override
-    int evaluateImpl(int value){
-        if(value == Integer.MIN_VALUE){
+    int evaluateImpl(int value) {
+        if (value == Integer.MIN_VALUE) {
             throw new ArithmeticException(String.format("integer overflow abs(%d)", value));
         }
         return super.evaluateImpl(value);

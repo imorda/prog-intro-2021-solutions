@@ -144,13 +144,13 @@ public final class ExpressionParser implements ExceptionParser {
         }
 
         private void testAlphanumericTagAmbiguity(String tag) throws ParseException {
-            if(isAlphanumericCharType(getCharType())
-                    && isAlphanumericCharType(Character.getType(tag.charAt(tag.length() - 1)))){
+            if (isAlphanumericCharType(getCharType())
+                    && isAlphanumericCharType(Character.getType(tag.charAt(tag.length() - 1)))) {
                 throw new InvalidOperatorException(source, "illegal characters after " + tag);
             }
         }
 
-        private boolean isAlphanumericCharType(int type){
+        private boolean isAlphanumericCharType(int type) {
             return type == Character.UPPERCASE_LETTER
                     || type == Character.LOWERCASE_LETTER
                     || type == Character.DECIMAL_DIGIT_NUMBER;

@@ -1,8 +1,5 @@
 package expression;
 
-import expression.Divide;
-import expression.PriorityExpression;
-
 import java.math.BigInteger;
 
 public class CheckedDivide extends Divide {

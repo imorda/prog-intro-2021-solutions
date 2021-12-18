@@ -9,6 +9,23 @@ public class CheckedPow extends NonAssociativeOperation {
         super(left, right);
     }
 
+    static int evaluateImpl(int a, int b) {
+        if (b == 1) {
+            return a;
+        }
+        if (b <= 0) {
+            if (a == 0 || b < 0) {
+                throw new ArithmeticException(String.format("%d pow %d is undefined", a, b));
+            }
+            return 1;
+        }
+        if (b % 2 == 0) {
+            int sqrtA = evaluateImpl(a, b / 2);
+            return CheckedMultiply.multiplyExact(sqrtA, sqrtA);
+        }
+        return CheckedMultiply.multiplyExact(evaluateImpl(a, b - 1), a);
+    }
+
     @Override
     protected int getPriority() {
         return 0;
@@ -38,22 +55,5 @@ public class CheckedPow extends NonAssociativeOperation {
     public int evaluate(int x) {
         return evaluateImpl(left.evaluate(x), right.evaluate(x));
 
-    }
-
-    static int evaluateImpl(int a, int b) {
-        if (b == 1){
-            return a;
-        }
-        if (b <= 0){
-            if (a == 0 || b < 0){
-                throw new ArithmeticException(String.format("%d pow %d is undefined", a, b));
-            }
-            return 1;
-        }
-        if(b % 2 == 0){
-            int sqrtA = evaluateImpl(a, b/2);
-            return CheckedMultiply.multiplyExact(sqrtA, sqrtA);
-        }
-        return CheckedMultiply.multiplyExact(evaluateImpl(a, b-1), a);
     }
 }

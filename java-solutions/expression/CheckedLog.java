@@ -9,6 +9,16 @@ public class CheckedLog extends NonAssociativeOperation {
         super(left, right);
     }
 
+    static int evaluateImpl(int a, int b) {
+        if (a <= 0 || b <= 0 || b == 1) {
+            throw new ArithmeticException(String.format("%d log %d is undefined", a, b));
+        }
+        if (a < b) {
+            return 0;
+        }
+        return 1 + evaluateImpl(CheckedDivide.divideExact(a, b), b);
+    }
+
     @Override
     protected int getPriority() {
         return 0;
@@ -38,15 +48,5 @@ public class CheckedLog extends NonAssociativeOperation {
     public int evaluate(int x) {
         return evaluateImpl(left.evaluate(x), right.evaluate(x));
 
-    }
-
-    static int evaluateImpl(int a, int b) {
-        if (a <= 0 || b <= 0 || b == 1){
-            throw new ArithmeticException(String.format("%d log %d is undefined", a, b));
-        }
-        if(a < b){
-            return 0;
-        }
-        return 1 + evaluateImpl(CheckedDivide.divideExact(a, b), b);
     }
 }

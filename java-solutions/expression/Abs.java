@@ -1,7 +1,5 @@
 package expression;
 
-import expression.exceptions.NumberParseException;
-
 import java.math.BigInteger;
 
 public class Abs extends UnaryOperation {
@@ -41,7 +39,7 @@ public class Abs extends UnaryOperation {
         throw new UnsupportedOperationException("Abs does not support BigIntegers");
     }
 
-    int evaluateImpl(int value){
+    int evaluateImpl(int value) {
         return value < 0 ? -value : value;
     }
 }

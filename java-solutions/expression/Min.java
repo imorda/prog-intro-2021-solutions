@@ -9,6 +9,10 @@ public final class Min extends AssociativeOperation {
         super(left, right);
     }
 
+    private static int evaluateImpl(int a, int b) {
+        return a < b ? a : b;
+    }
+
     @Override
     protected int getPriority() {
         return 3;
@@ -37,9 +41,5 @@ public final class Min extends AssociativeOperation {
     @Override
     public int evaluate(int x) {
         return evaluateImpl(left.evaluate(x), right.evaluate(x));
-    }
-
-    private static int evaluateImpl(int a, int b){
-        return a < b ? a : b;
     }
 }
