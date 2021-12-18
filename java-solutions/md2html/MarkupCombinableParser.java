@@ -58,7 +58,7 @@ public class MarkupCombinableParser {
             }
             data.incPos();
         } while (!data.isExhausted() && !isTagSymbol(data) &&
-                !(data.startsWith("\r\n\r\n", "\n\n")));
+                !(data.startsWith(System.lineSeparator().repeat(2))));
 
         if (data.isExhausted()) {
             while (textBuilder.length() > 0 &&

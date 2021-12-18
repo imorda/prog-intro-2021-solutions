@@ -11,7 +11,7 @@ public class Divide extends NonAssociativeOperation {
 
     @Override
     protected int getPriority() {
-        return 0;
+        return 1;
     }
 
     @Override

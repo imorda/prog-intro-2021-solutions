@@ -1,7 +1,11 @@
 package expression.exceptions;
 
 import expression.*;
+import expression.parser.BaseParser;
+import expression.parser.CharSource;
+import expression.parser.StringSource;
 
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -13,20 +17,23 @@ public final class ExpressionParser implements ExceptionParser {
     }
 
     private static class ExpressionParserImpl extends BaseParser {
-        private final Map<String, SupportedBinaryOperations> supportedBinOps = Map.of(
-                CheckedAdd.OPERATION_SYM, new SupportedBinaryOperations(CheckedAdd::new, 2, false),
-                CheckedSubtract.OPERATION_SYM, new SupportedBinaryOperations(CheckedSubtract::new, 2, false),
-                CheckedMultiply.OPERATION_SYM, new SupportedBinaryOperations(CheckedMultiply::new, 1, false),
-                CheckedDivide.OPERATION_SYM, new SupportedBinaryOperations(CheckedDivide::new, 1, false),
-                Max.OPERATION_SYM, new SupportedBinaryOperations(Max::new, 3, true),
-                Min.OPERATION_SYM, new SupportedBinaryOperations(Min::new, 3, true)
+        private final List<SupportedBinaryOperations> supportedBinOps = List.of(
+                new SupportedBinaryOperations(CheckedPow.OPERATION_SYM, CheckedPow::new, 0),
+                new SupportedBinaryOperations(CheckedLog.OPERATION_SYM, CheckedLog::new, 0),
+                new SupportedBinaryOperations(CheckedAdd.OPERATION_SYM, CheckedAdd::new, 2),
+                new SupportedBinaryOperations(CheckedSubtract.OPERATION_SYM, CheckedSubtract::new, 2),
+                new SupportedBinaryOperations(CheckedMultiply.OPERATION_SYM, CheckedMultiply::new, 1),
+                new SupportedBinaryOperations(CheckedDivide.OPERATION_SYM, CheckedDivide::new, 1),
+                new SupportedBinaryOperations(Max.OPERATION_SYM, Max::new, 3),
+                new SupportedBinaryOperations(Min.OPERATION_SYM, Min::new, 3)
         );
         private final Map<String, SupportedUnaryOperations> supportedUnaryOps = Map.of(
-                CheckedNegate.OPERATION_SYM, new SupportedUnaryOperations(CheckedNegate::new, 0),
-                TZero.OPERATION_SYM, new SupportedUnaryOperations(TZero::new, 0),
-                LZero.OPERATION_SYM, new SupportedUnaryOperations(LZero::new, 0)
+                CheckedNegate.OPERATION_SYM, new SupportedUnaryOperations(CheckedNegate::new, -1),
+                TZero.OPERATION_SYM, new SupportedUnaryOperations(TZero::new, -1),
+                LZero.OPERATION_SYM, new SupportedUnaryOperations(LZero::new, -1),
+                CheckedAbs.OPERATION_SYM, new SupportedUnaryOperations(CheckedAbs::new, -1)
         );
-        private final String supportedVariables = "xXyYzZ";
+        private final String supportedVariables = "xyz";
 
         public ExpressionParserImpl(CharSource source) {
             super(source);
@@ -37,7 +44,7 @@ public final class ExpressionParser implements ExceptionParser {
         }
 
         private PriorityExpression parseExpression() throws ParseException {
-            PriorityExpression res = parseOperation(false);
+            PriorityExpression res = parseOperation();
             skipWhitespace();
             if (eof()) {
                 return res;
@@ -45,59 +52,36 @@ public final class ExpressionParser implements ExceptionParser {
             throw new EOFException(source);
         }
 
-        private PriorityExpression parseOperation(boolean startsWithBracket) throws ParseException {
-            return parseOperation(null, null, startsWithBracket);
+        private PriorityExpression parseOperation() throws ParseException {
+            return parseOperation(Integer.MAX_VALUE);
         }
 
-        private PriorityExpression parseOperation(PriorityExpression prevOperand,
-                                                  SupportedBinaryOperations prevOperator,
-                                                  boolean startsWithBracket) throws ParseException {
+        private PriorityExpression parseOperation(int maxPriority) throws ParseException {
             skipWhitespace();
 
-            if (prevOperand == null) {
-                prevOperand = parseOperand();
-            }
+            PriorityExpression leftOperand = parseOperand();
+            while (true) {
+                SupportedBinaryOperations operator = takeBinaryOperator(maxPriority);
 
-            skipWhitespace();
-
-            if (prevOperator == null) {
-                prevOperator = takeBinaryOperator();
-            }
-
-            skipWhitespace();
-            PriorityExpression rightOperand = null;
-            if (prevOperator != null) {
-                rightOperand = parseOperand();
-            }
-            skipWhitespace();
-
-            if ((!startsWithBracket && eof()) || (startsWithBracket && take(')'))) {
-                if (prevOperator == null) {
-                    return prevOperand;
+                if (operator == null) {
+                    return leftOperand;
                 }
-                return prevOperator.expConstructor().apply(prevOperand, rightOperand);
-            }
 
-            skipWhitespace();
-            SupportedBinaryOperations nextOp = takeBinaryOperator();
-            skipWhitespace();
+                skipWhitespace();
+                PriorityExpression rightOperand = parseOperation(operator.priority() - 1);
 
-            if (nextOp == null || prevOperator == null) {
-                throw new InvalidOperatorException(source, peekOrEOF());
+                leftOperand = operator.expConstructor().apply(leftOperand, rightOperand);
             }
-
-            if (nextOp.priority() < prevOperator.priority()) {
-                return prevOperator.expConstructor().apply(prevOperand, parseOperation(rightOperand, nextOp,
-                        startsWithBracket));
-            }
-            return parseOperation(prevOperator.expConstructor().apply(prevOperand, rightOperand),
-                    nextOp, startsWithBracket);
         }
 
         private PriorityExpression parseOperand() throws ParseException {
             skipWhitespace();
             if (take('(')) {
-                return parseOperation(true);
+                PriorityExpression op = parseOperation();
+                if (!take(')')) {
+                    throw new ExpressionParseException("expected ')'", source, peekOrEOF());
+                }
+                return op;
             }
             if (test(Character.DECIMAL_DIGIT_NUMBER)) {
                 StringBuilder number = new StringBuilder();
@@ -108,17 +92,16 @@ public final class ExpressionParser implements ExceptionParser {
                 char varSymbol = take();
                 return new Variable(String.valueOf(varSymbol));
             }
+
             SupportedUnaryOperations operator = takeUnaryOperator();
             if (operator != null) {
                 if (operator == supportedUnaryOps.get("-") && test(Character.DECIMAL_DIGIT_NUMBER)) {
                     StringBuilder number = new StringBuilder().append('-');
                     return tryExtractConst(number);
                 }
-
                 if (test('(')) {
                     return operator.expConstructor().apply(new BraceEnclosed(parseOperand()));
                 }
-
                 return operator.expConstructor().apply(parseOperand());
             }
             throw new InvalidOperandException(source, peekOrEOF());
@@ -148,18 +131,35 @@ public final class ExpressionParser implements ExceptionParser {
             }
         }
 
-        private SupportedBinaryOperations takeBinaryOperator() {
-            for (Map.Entry<String, SupportedBinaryOperations> i : supportedBinOps.entrySet()) {
-                if (take(i.getKey())) {
-                    return i.getValue();
+        private SupportedBinaryOperations takeBinaryOperator(int maxPriority) throws ParseException {
+            skipWhitespace();
+
+            for (SupportedBinaryOperations i : supportedBinOps) {
+                if (i.priority() <= maxPriority && take(i.name())) {
+                    testAlphanumericTagAmbiguity(i.name());
+                    return i;
                 }
             }
             return null;
         }
 
-        private SupportedUnaryOperations takeUnaryOperator() {
+        private void testAlphanumericTagAmbiguity(String tag) throws ParseException {
+            if(isAlphanumericCharType(getCharType())
+                    && isAlphanumericCharType(Character.getType(tag.charAt(tag.length() - 1)))){
+                throw new InvalidOperatorException(source, "illegal characters after " + tag);
+            }
+        }
+
+        private boolean isAlphanumericCharType(int type){
+            return type == Character.UPPERCASE_LETTER
+                    || type == Character.LOWERCASE_LETTER
+                    || type == Character.DECIMAL_DIGIT_NUMBER;
+        }
+
+        private SupportedUnaryOperations takeUnaryOperator() throws ParseException {
             for (Map.Entry<String, SupportedUnaryOperations> i : supportedUnaryOps.entrySet()) {
                 if (take(i.getKey())) {
+                    testAlphanumericTagAmbiguity(i.getKey());
                     return i.getValue();
                 }
             }
@@ -167,9 +167,9 @@ public final class ExpressionParser implements ExceptionParser {
         }
 
         record SupportedBinaryOperations(
+                String name,
                 BiFunction<PriorityExpression, PriorityExpression, PriorityExpression> expConstructor,
-                int priority,
-                boolean requiresWhitespace
+                int priority
         ) {
         }
 

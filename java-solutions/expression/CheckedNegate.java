@@ -1,4 +1,4 @@
-package expression.exceptions;
+package expression;
 
 import expression.Negate;
 import expression.PriorityExpression;
@@ -25,7 +25,7 @@ public class CheckedNegate extends Negate {
         return negateExact(exp.evaluate(x));
     }
 
-    private static int negateExact(int value) {
+    static int negateExact(int value) {
         if (value == Integer.MIN_VALUE) {
             throw new ArithmeticException(String.format("integer overflow (-%d)", value));
         }

@@ -1,4 +1,4 @@
-package expression.exceptions;
+package expression;
 
 import expression.Multiply;
 import expression.PriorityExpression;
@@ -25,7 +25,7 @@ public class CheckedMultiply extends Multiply {
         return multiplyExact(left.evaluate(x), right.evaluate(x));
     }
 
-    private static int multiplyExact(int a, int b) {
+    static int multiplyExact(int a, int b) {
         if(a < b){
             int temp = a;
             a = b;

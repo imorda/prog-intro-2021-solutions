@@ -1,4 +1,4 @@
-package expression.exceptions;
+package expression;
 
 import expression.PriorityExpression;
 import expression.Subtract;
@@ -25,7 +25,7 @@ public class CheckedSubtract extends Subtract {
         return subtractExact(left.evaluate(x), right.evaluate(x));
     }
 
-    private static int subtractExact(int a, int b) {
+    static int subtractExact(int a, int b) {
         int c = a - b;
         if (b > 0 && Integer.MIN_VALUE + b > a || b < 0 && Integer.MAX_VALUE + b < a) {
             throw new ArithmeticException(String.format("integer overflow (%d - %d)", a, b));

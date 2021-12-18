@@ -7,7 +7,7 @@ import java.util.function.Predicate;
  */
 public class BaseParser {
     private static final char END = '\0';
-    private final CharSource source;
+    protected final CharSource source;
     private char ch = 0xffff;
 
     protected BaseParser(final CharSource source) {
@@ -21,6 +21,13 @@ public class BaseParser {
         return result;
     }
 
+    protected String peekOrEOF() {
+        if (eof()) {
+            return "end-of-file";
+        }
+        return String.valueOf(ch);
+    }
+
     protected boolean test(final char expected) {
         return ch == expected;
     }
@@ -31,6 +38,10 @@ public class BaseParser {
 
     protected boolean test(final int expectedType) {
         return Character.getType(ch) == expectedType;
+    }
+
+    protected int getCharType() {
+        return Character.getType(ch);
     }
 
     protected boolean take(final char expected) {

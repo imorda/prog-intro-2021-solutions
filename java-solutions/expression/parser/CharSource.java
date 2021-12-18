@@ -15,4 +15,6 @@ public interface CharSource {
     void returnToMark();
 
     IllegalArgumentException error(final String message);
+
+    int getOffset();
 }

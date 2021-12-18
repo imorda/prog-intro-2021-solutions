@@ -2,16 +2,16 @@ package expression;
 
 import java.math.BigInteger;
 
-public final class Min extends AssociativeOperation {
-    public final static String OPERATION_SYM = "min";
+public class CheckedLog extends NonAssociativeOperation {
+    public final static String OPERATION_SYM = "//";
 
-    public Min(PriorityExpression left, PriorityExpression right) {
+    public CheckedLog(PriorityExpression left, PriorityExpression right) {
         super(left, right);
     }
 
     @Override
     protected int getPriority() {
-        return 3;
+        return 0;
     }
 
     @Override
@@ -26,7 +26,7 @@ public final class Min extends AssociativeOperation {
 
     @Override
     public BigInteger evaluate(BigInteger x) {
-        throw new UnsupportedOperationException("BigIntegers are unsupported for min operation");
+        throw new UnsupportedOperationException("Log does not support BigIntegers");
     }
 
     @Override
@@ -37,9 +37,16 @@ public final class Min extends AssociativeOperation {
     @Override
     public int evaluate(int x) {
         return evaluateImpl(left.evaluate(x), right.evaluate(x));
+
     }
 
-    private static int evaluateImpl(int a, int b){
-        return a < b ? a : b;
+    static int evaluateImpl(int a, int b) {
+        if (a <= 0 || b <= 0 || b == 1){
+            throw new ArithmeticException(String.format("%d log %d is undefined", a, b));
+        }
+        if(a < b){
+            return 0;
+        }
+        return 1 + evaluateImpl(CheckedDivide.divideExact(a, b), b);
     }
 }

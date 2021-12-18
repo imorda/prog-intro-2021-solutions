@@ -1,5 +1,7 @@
 package expression.exceptions;
 
+import expression.parser.CharSource;
+
 public class ExpressionParseException extends ParseException {
     private final String got;
 

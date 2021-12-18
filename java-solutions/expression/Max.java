@@ -11,7 +11,7 @@ public final class Max extends AssociativeOperation {
 
     @Override
     protected int getPriority() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -31,11 +31,15 @@ public final class Max extends AssociativeOperation {
 
     @Override
     public int evaluate(int x, int y, int z) {
-        return Math.max(left.evaluate(x, y, z), right.evaluate(x, y, z));
+        return evaluateImpl(left.evaluate(x, y, z), right.evaluate(x, y, z));
     }
 
     @Override
     public int evaluate(int x) {
-        return Math.max(left.evaluate(x), right.evaluate(x));
+        return evaluateImpl(left.evaluate(x), right.evaluate(x));
+    }
+
+    private static int evaluateImpl(int a, int b){
+        return a > b ? a : b;
     }
 }

@@ -1,4 +1,4 @@
-package expression.exceptions;
+package expression;
 
 import expression.Divide;
 import expression.PriorityExpression;
@@ -10,7 +10,7 @@ public class CheckedDivide extends Divide {
         super(left, right);
     }
 
-    private static int divideExact(int a, int b) {
+    static int divideExact(int a, int b) {
         if (a == Integer.MIN_VALUE && b == -1) {
             throw new ArithmeticException(String.format("32-bit integer overflow while dividing %d and %d", a, b));
         }

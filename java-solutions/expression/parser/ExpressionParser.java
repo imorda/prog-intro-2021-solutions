@@ -6,7 +6,7 @@ import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-public final class ExpressionParser implements Parser {
+public class ExpressionParser implements Parser {
     @Override
     public TripleExpression parse(String expression) {
         return new ExpressionParserImpl(expression).parseExpression();
@@ -26,7 +26,7 @@ public final class ExpressionParser implements Parser {
                 TZero.OPERATION_SYM, new SupportedUnaryOperations(TZero::new, 0),
                 LZero.OPERATION_SYM, new SupportedUnaryOperations(LZero::new, 0)
         );
-        private final String supportedVariables = "xXyYzZ";
+        private final String supportedVariables = "xyz";
 
         public ExpressionParserImpl(CharSource source) {
             super(source);
@@ -46,52 +46,35 @@ public final class ExpressionParser implements Parser {
         }
 
         private PriorityExpression parseOperation() {
-            return parseOperation(null, null);
+            return parseOperation(Integer.MAX_VALUE);
         }
 
-        private PriorityExpression parseOperation(PriorityExpression prevOperand,
-                                                  SupportedBinaryOperations prevOperator) {
+        private PriorityExpression parseOperation(int maxPriority) {
             skipWhitespace();
 
-            if (prevOperand == null) {
-                prevOperand = parseOperand();
-            }
+            PriorityExpression leftOperand = parseOperand();
+            while (true) {
+                skipWhitespace();
 
-            skipWhitespace();
+                SupportedBinaryOperations operator = takeBinaryOperator(maxPriority);
 
-            if (prevOperator == null) {
-                prevOperator = takeBinaryOperator();
-            }
-
-            skipWhitespace();
-            PriorityExpression rightOperand = parseOperand();
-            skipWhitespace();
-
-            if (eof() || take(')')) {
-                if (prevOperator == null) {
-                    return prevOperand;
+                if (operator == null) {
+                    return leftOperand;
                 }
-                return prevOperator.expConstructor().apply(prevOperand, rightOperand);
-            }
 
-            skipWhitespace();
-            SupportedBinaryOperations nextOp = takeBinaryOperator();
-            skipWhitespace();
+                skipWhitespace();
+                PriorityExpression rightOperand = parseOperation(operator.priority() - 1);
 
-            if (nextOp == null || prevOperator == null) {
-                throw error("No operator found!");
+                leftOperand = operator.expConstructor().apply(leftOperand, rightOperand);
             }
-
-            if (nextOp.priority() < prevOperator.priority()) {
-                return prevOperator.expConstructor().apply(prevOperand, parseOperation(rightOperand, nextOp));
-            }
-            return parseOperation(prevOperator.expConstructor().apply(prevOperand, rightOperand), nextOp);
         }
 
         private PriorityExpression parseOperand() {
             skipWhitespace();
             if (take('(')) {
-                return parseOperation();
+                PriorityExpression op = parseOperation();
+                expect(')');
+                return op;
             }
             if (test(Character.DECIMAL_DIGIT_NUMBER)) {
                 StringBuilder number = new StringBuilder();
@@ -115,7 +98,7 @@ public final class ExpressionParser implements Parser {
 
                 return operator.expConstructor().apply(parseOperand());
             }
-            return null;
+            throw error("Unrecognized operand");
         }
 
         private PriorityExpression tryExtractConst(StringBuilder number) {
@@ -139,9 +122,9 @@ public final class ExpressionParser implements Parser {
             }
         }
 
-        private SupportedBinaryOperations takeBinaryOperator() {
+        private SupportedBinaryOperations takeBinaryOperator(int maxPriority) {
             for (Map.Entry<String, SupportedBinaryOperations> i : supportedBinOps.entrySet()) {
-                if (take(i.getKey())) {
+                if (i.getValue().priority() <= maxPriority && take(i.getKey())) {
                     return i.getValue();
                 }
             }
