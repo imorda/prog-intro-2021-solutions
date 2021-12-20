@@ -10,14 +10,14 @@ import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         if (args.length != 1) {
             System.out.println("Invalid arguments count, got " + args.length + " arguments");
             return;
         }
 
         TripleExpression parsed;
-        Parser parser = new ExpressionParser();
+        ExceptionParser parser = new ExpressionParser();
         try {
             final String input = Files.readString(Paths.get(args[0]));
             try {

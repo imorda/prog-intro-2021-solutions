@@ -1,4 +1,7 @@
-package expression;
+package expression.exceptions;
+
+import expression.Multiply;
+import expression.PriorityExpression;
 
 import java.math.BigInteger;
 

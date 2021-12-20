@@ -39,7 +39,7 @@ public class Abs extends UnaryOperation {
         throw new UnsupportedOperationException("Abs does not support BigIntegers");
     }
 
-    int evaluateImpl(int value) {
+    protected int evaluateImpl(int value) {
         return value < 0 ? -value : value;
     }
 }

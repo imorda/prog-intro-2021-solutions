@@ -1,4 +1,7 @@
-package expression;
+package expression.exceptions;
+
+import expression.Abs;
+import expression.PriorityExpression;
 
 import java.math.BigInteger;
 
@@ -40,7 +43,7 @@ public final class CheckedAbs extends Abs {
     }
 
     @Override
-    int evaluateImpl(int value) {
+    protected int evaluateImpl(int value) {
         if (value == Integer.MIN_VALUE) {
             throw new ArithmeticException(String.format("integer overflow abs(%d)", value));
         }
