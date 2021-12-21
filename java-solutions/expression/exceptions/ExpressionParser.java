@@ -20,12 +20,12 @@ public final class ExpressionParser implements ExceptionParser {
         private final List<SupportedBinaryOperations> supportedBinOps = List.of(
                 new SupportedBinaryOperations(CheckedPow.OPERATION_SYM, CheckedPow::new, 0),
                 new SupportedBinaryOperations(CheckedLog.OPERATION_SYM, CheckedLog::new, 0),
-                new SupportedBinaryOperations(CheckedAdd.OPERATION_SYM, CheckedAdd::new, 2),
-                new SupportedBinaryOperations(CheckedSubtract.OPERATION_SYM, CheckedSubtract::new, 2),
-                new SupportedBinaryOperations(CheckedMultiply.OPERATION_SYM, CheckedMultiply::new, 1),
-                new SupportedBinaryOperations(CheckedDivide.OPERATION_SYM, CheckedDivide::new, 1),
-                new SupportedBinaryOperations(Max.OPERATION_SYM, Max::new, 3),
-                new SupportedBinaryOperations(Min.OPERATION_SYM, Min::new, 3)
+                new SupportedBinaryOperations(CheckedAdd.OPERATION_SYM, CheckedAdd::new, 20),
+                new SupportedBinaryOperations(CheckedSubtract.OPERATION_SYM, CheckedSubtract::new, 20),
+                new SupportedBinaryOperations(CheckedMultiply.OPERATION_SYM, CheckedMultiply::new, 10),
+                new SupportedBinaryOperations(CheckedDivide.OPERATION_SYM, CheckedDivide::new, 10),
+                new SupportedBinaryOperations(Max.OPERATION_SYM, Max::new, 30),
+                new SupportedBinaryOperations(Min.OPERATION_SYM, Min::new, 30)
         );
         private final Map<String, SupportedUnaryOperations> supportedUnaryOps = Map.of(
                 CheckedNegate.OPERATION_SYM, new SupportedUnaryOperations(CheckedNegate::new, -1),
@@ -33,7 +33,7 @@ public final class ExpressionParser implements ExceptionParser {
                 LZero.OPERATION_SYM, new SupportedUnaryOperations(LZero::new, -1),
                 CheckedAbs.OPERATION_SYM, new SupportedUnaryOperations(CheckedAbs::new, -1)
         );
-        private final String supportedVariables = "xyz";
+        private final String SUPPORTED_VARIABLES = "xyz";
 
         public ExpressionParserImpl(CharSource source) {
             super(source);
@@ -70,7 +70,7 @@ public final class ExpressionParser implements ExceptionParser {
                 skipWhitespace();
                 PriorityExpression rightOperand = parseOperation(operator.priority() - 1);
 
-                leftOperand = operator.expConstructor().apply(leftOperand, rightOperand);
+                leftOperand = operator.expFactory().apply(leftOperand, rightOperand);
             }
         }
 
@@ -88,7 +88,7 @@ public final class ExpressionParser implements ExceptionParser {
                 return tryExtractConst(number);
             }
 
-            if (test(x -> supportedVariables.indexOf(x) > -1)) {
+            if (test(x -> SUPPORTED_VARIABLES.indexOf(x) > -1)) {
                 char varSymbol = take();
                 return new Variable(String.valueOf(varSymbol));
             }
@@ -100,9 +100,9 @@ public final class ExpressionParser implements ExceptionParser {
                     return tryExtractConst(number);
                 }
                 if (test('(')) {
-                    return operator.expConstructor().apply(new BraceEnclosed(parseOperand()));
+                    return operator.expFactory().apply(new BraceEnclosed(parseOperand()));
                 }
-                return operator.expConstructor().apply(parseOperand());
+                return operator.expFactory().apply(parseOperand());
             }
             throw new InvalidOperandException(source, peekOrEOF());
         }
@@ -168,13 +168,13 @@ public final class ExpressionParser implements ExceptionParser {
 
         record SupportedBinaryOperations(
                 String name,
-                BiFunction<PriorityExpression, PriorityExpression, PriorityExpression> expConstructor,
+                BiFunction<PriorityExpression, PriorityExpression, PriorityExpression> expFactory,
                 int priority
         ) {
         }
 
         record SupportedUnaryOperations(
-                Function<PriorityExpression, PriorityExpression> expConstructor,
+                Function<PriorityExpression, PriorityExpression> expFactory,
                 int priority
         ) {
         }

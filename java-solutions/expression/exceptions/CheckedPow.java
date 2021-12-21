@@ -6,7 +6,7 @@ import expression.PriorityExpression;
 import java.math.BigInteger;
 
 public class CheckedPow extends NonAssociativeOperation {
-    public final static String OPERATION_SYM = "**";
+    public static final String OPERATION_SYM = "**";
 
     public CheckedPow(PriorityExpression left, PriorityExpression right) {
         super(left, right);
