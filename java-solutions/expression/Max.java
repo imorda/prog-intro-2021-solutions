@@ -3,7 +3,7 @@ package expression;
 import java.math.BigInteger;
 
 public final class Max extends AssociativeOperation {
-    public final static String OPERATION_SYM = "max";
+    public static final String OPERATION_SYM = "max";
 
     public Max(PriorityExpression left, PriorityExpression right) {
         super(left, right);

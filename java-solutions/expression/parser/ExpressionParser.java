@@ -8,18 +8,18 @@ import java.util.function.Function;
 
 public class ExpressionParser implements Parser {
     @Override
-    public TripleExpression parse(String expression) {
+    public TripleExpression parse(final String expression) {
         return new ExpressionParserImpl(expression).parseExpression();
     }
 
     private static class ExpressionParserImpl extends BaseParser {
         private final Map<String, SupportedBinaryOperations> supportedBinOps = Map.of(
-                Add.OPERATION_SYM, new SupportedBinaryOperations(Add::new, 2),
-                Subtract.OPERATION_SYM, new SupportedBinaryOperations(Subtract::new, 2),
-                Multiply.OPERATION_SYM, new SupportedBinaryOperations(Multiply::new, 1),
-                Divide.OPERATION_SYM, new SupportedBinaryOperations(Divide::new, 1),
-                Max.OPERATION_SYM, new SupportedBinaryOperations(Max::new, 3),
-                Min.OPERATION_SYM, new SupportedBinaryOperations(Min::new, 3)
+                Add.OPERATION_SYM, new SupportedBinaryOperations(Add::new, 20),
+                Subtract.OPERATION_SYM, new SupportedBinaryOperations(Subtract::new, 20),
+                Multiply.OPERATION_SYM, new SupportedBinaryOperations(Multiply::new, 10),
+                Divide.OPERATION_SYM, new SupportedBinaryOperations(Divide::new, 10),
+                Max.OPERATION_SYM, new SupportedBinaryOperations(Max::new, 30),
+                Min.OPERATION_SYM, new SupportedBinaryOperations(Min::new, 30)
         );
         private final Map<String, SupportedUnaryOperations> supportedUnaryOps = Map.of(
                 Negate.OPERATION_SYM, new SupportedUnaryOperations(Negate::new, 0),
@@ -28,16 +28,16 @@ public class ExpressionParser implements Parser {
         );
         private final String supportedVariables = "xyz";
 
-        public ExpressionParserImpl(CharSource source) {
+        public ExpressionParserImpl(final CharSource source) {
             super(source);
         }
 
-        public ExpressionParserImpl(String source) {
+        public ExpressionParserImpl(final String source) {
             this(new StringSource(source));
         }
 
         private PriorityExpression parseExpression() {
-            PriorityExpression res = parseOperation();
+            final PriorityExpression res = parseOperation();
             skipWhitespace();
             if (eof()) {
                 return res;
@@ -49,46 +49,46 @@ public class ExpressionParser implements Parser {
             return parseOperation(Integer.MAX_VALUE);
         }
 
-        private PriorityExpression parseOperation(int maxPriority) {
+        private PriorityExpression parseOperation(final int maxPriority) {
             skipWhitespace();
 
             PriorityExpression leftOperand = parseOperand();
             while (true) {
                 skipWhitespace();
 
-                SupportedBinaryOperations operator = takeBinaryOperator(maxPriority);
+                final SupportedBinaryOperations operator = takeBinaryOperator(maxPriority);
 
                 if (operator == null) {
                     return leftOperand;
                 }
 
                 skipWhitespace();
-                PriorityExpression rightOperand = parseOperation(operator.priority() - 1);
+                final PriorityExpression rightOperand = parseOperation(operator.priority() - 1);
 
-                leftOperand = operator.expConstructor().apply(leftOperand, rightOperand);
+                leftOperand = operator.expFactory().apply(leftOperand, rightOperand);
             }
         }
 
         private PriorityExpression parseOperand() {
             skipWhitespace();
             if (take('(')) {
-                PriorityExpression op = parseOperation();
+                final PriorityExpression op = parseOperation();
                 expect(')');
                 return op;
             }
             if (test(Character.DECIMAL_DIGIT_NUMBER)) {
-                StringBuilder number = new StringBuilder();
+                final StringBuilder number = new StringBuilder();
                 return tryExtractConst(number);
             }
 
             if (test(x -> supportedVariables.indexOf(x) > -1)) {
-                char varSymbol = take();
+                final char varSymbol = take();
                 return new Variable(String.valueOf(varSymbol));
             }
-            SupportedUnaryOperations operator = takeUnaryOperator();
+            final SupportedUnaryOperations operator = takeUnaryOperator();
             if (operator != null) {
                 if (operator == supportedUnaryOps.get("-") && test(Character.DECIMAL_DIGIT_NUMBER)) {
-                    StringBuilder number = new StringBuilder().append('-');
+                    final StringBuilder number = new StringBuilder().append('-');
                     return tryExtractConst(number);
                 }
 
@@ -101,7 +101,7 @@ public class ExpressionParser implements Parser {
             throw error("Unrecognized operand");
         }
 
-        private PriorityExpression tryExtractConst(StringBuilder number) {
+        private PriorityExpression tryExtractConst(final StringBuilder number) {
             takeInteger(number);
             try {
                 return new Const(Integer.parseInt(number.toString()));
@@ -110,7 +110,7 @@ public class ExpressionParser implements Parser {
             }
         }
 
-        private void takeInteger(StringBuilder sb) {
+        private void takeInteger(final StringBuilder sb) {
             if (take('0')) {
                 sb.append('0');
             } else if (between('1', '9')) {
@@ -122,8 +122,8 @@ public class ExpressionParser implements Parser {
             }
         }
 
-        private SupportedBinaryOperations takeBinaryOperator(int maxPriority) {
-            for (Map.Entry<String, SupportedBinaryOperations> i : supportedBinOps.entrySet()) {
+        private SupportedBinaryOperations takeBinaryOperator(final int maxPriority) {
+            for (final Map.Entry<String, SupportedBinaryOperations> i : supportedBinOps.entrySet()) {
                 if (i.getValue().priority() <= maxPriority && take(i.getKey())) {
                     return i.getValue();
                 }
@@ -132,7 +132,7 @@ public class ExpressionParser implements Parser {
         }
 
         private SupportedUnaryOperations takeUnaryOperator() {
-            for (Map.Entry<String, SupportedUnaryOperations> i : supportedUnaryOps.entrySet()) {
+            for (final Map.Entry<String, SupportedUnaryOperations> i : supportedUnaryOps.entrySet()) {
                 if (take(i.getKey())) {
                     return i.getValue();
                 }
@@ -141,7 +141,7 @@ public class ExpressionParser implements Parser {
         }
 
         record SupportedBinaryOperations(
-                BiFunction<PriorityExpression, PriorityExpression, PriorityExpression> expConstructor,
+                BiFunction<PriorityExpression, PriorityExpression, PriorityExpression> expFactory,
                 int priority
         ) {
         }
